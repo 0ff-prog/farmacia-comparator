@@ -17,6 +17,7 @@ class ProductMaster(BaseModel):
     sku: str = Field(..., description="Código SKU de identificación comercial")
     display_name: str = Field(..., description="Nombre limpio para la interfaz")
     category: str = Field(default="General", description="Categoría del medicamento")
+    active_ingredient: Optional[str] = Field(default=None, description="Principio activo")
     unit_of_measure: str = Field(default="Unidad", description="Unidad de medida (ej: Caja x10)")
     is_ims: bool = Field(default=False, description="Flag indicador del segmento Top 800 IMS")
     last_updated: datetime = Field(default_factory=datetime.utcnow)

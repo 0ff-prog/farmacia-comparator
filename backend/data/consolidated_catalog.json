@@ -1,0 +1,1890 @@
+{
+  "total_skus": 20,
+  "items": [
+    {
+      "master_id": "atorvastatina-20mg-x-30-tab",
+      "sku": "SKU-1001",
+      "display_name": "Atorvastatina 20mg x 30 Tab",
+      "active_ingredient": "",
+      "category": "General",
+      "unit_of_measure": "Unidad",
+      "is_ims": true,
+      "suppliers": {
+        "prov_1": {
+          "supplier_id": "prov_1",
+          "supplier_name": "Droguería Cobeca",
+          "raw_name": "Atorvastatina 20mg x 30 Tab",
+          "base_price": 4.2,
+          "in_stock": true,
+          "product_url": "https://comparadores.drogueriascobeca.com"
+        },
+        "prov_2": {
+          "supplier_id": "prov_2",
+          "supplier_name": "Farmacia Saas",
+          "raw_name": "Atorvastatina 20mg x 30 Tab",
+          "base_price": 4.45,
+          "in_stock": true,
+          "product_url": "https://farmaciasaas.com"
+        },
+        "prov_3": {
+          "supplier_id": "prov_3",
+          "supplier_name": "Farmacia Locatel",
+          "raw_name": "Atorvastatina 20mg x 30 Tab",
+          "base_price": 3.95,
+          "in_stock": true,
+          "product_url": "https://locatel.com.ve"
+        },
+        "prov_4": {
+          "supplier_id": "prov_4",
+          "supplier_name": "Farmacia Farmatodo",
+          "raw_name": "Atorvastatina 20mg x 30 Tab",
+          "base_price": 4.8,
+          "in_stock": true,
+          "product_url": "https://farmatodo.com.ve"
+        }
+      },
+      "min_price": 3.95,
+      "max_price": 4.8,
+      "winner_id": "prov_3",
+      "evaluations": {
+        "prov_1": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 4.2,
+          "adjusted_price": 3.99,
+          "adj_percent": -5.0,
+          "color": "yellow",
+          "status": "Intermedio"
+        },
+        "prov_2": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 4.45,
+          "adjusted_price": 4.45,
+          "adj_percent": 0.0,
+          "color": "yellow",
+          "status": "Intermedio"
+        },
+        "prov_3": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 3.95,
+          "adjusted_price": 3.95,
+          "adj_percent": 0.0,
+          "color": "green",
+          "status": "Mejor Precio"
+        },
+        "prov_4": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 4.8,
+          "adjusted_price": 4.8,
+          "adj_percent": 0.0,
+          "color": "red",
+          "status": "Más Alto"
+        }
+      },
+      "preferred_metrics": {
+        "price": 3.99,
+        "is_winner": false,
+        "delta_min": 1.0,
+        "delta_media": -9.3,
+        "competitor_avg": 4.4
+      }
+    },
+    {
+      "master_id": "losartan-potasico-50mg-x-30-tab",
+      "sku": "SKU-1002",
+      "display_name": "Losartán Potásico 50mg x 30 Tab",
+      "active_ingredient": "",
+      "category": "General",
+      "unit_of_measure": "Unidad",
+      "is_ims": true,
+      "suppliers": {
+        "prov_1": {
+          "supplier_id": "prov_1",
+          "supplier_name": "Droguería Cobeca",
+          "raw_name": "Losartán Potásico 50mg x 30 Tab",
+          "base_price": 3.1,
+          "in_stock": true,
+          "product_url": "https://comparadores.drogueriascobeca.com"
+        },
+        "prov_2": {
+          "supplier_id": "prov_2",
+          "supplier_name": "Farmacia Saas",
+          "raw_name": "Losartán Potásico 50mg x 30 Tab",
+          "base_price": 2.9,
+          "in_stock": true,
+          "product_url": "https://farmaciasaas.com"
+        },
+        "prov_3": {
+          "supplier_id": "prov_3",
+          "supplier_name": "Farmacia Locatel",
+          "raw_name": "Losartán Potásico 50mg x 30 Tab",
+          "base_price": 3.4,
+          "in_stock": true,
+          "product_url": "https://locatel.com.ve"
+        },
+        "prov_4": {
+          "supplier_id": "prov_4",
+          "supplier_name": "Farmacia Farmatodo",
+          "raw_name": "Losartán Potásico 50mg x 30 Tab",
+          "base_price": 3.65,
+          "in_stock": true,
+          "product_url": "https://farmatodo.com.ve"
+        }
+      },
+      "min_price": 2.9,
+      "max_price": 3.65,
+      "winner_id": "prov_2",
+      "evaluations": {
+        "prov_1": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 3.1,
+          "adjusted_price": 2.94,
+          "adj_percent": -5.0,
+          "color": "yellow",
+          "status": "Intermedio"
+        },
+        "prov_2": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 2.9,
+          "adjusted_price": 2.9,
+          "adj_percent": 0.0,
+          "color": "green",
+          "status": "Mejor Precio"
+        },
+        "prov_3": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 3.4,
+          "adjusted_price": 3.4,
+          "adj_percent": 0.0,
+          "color": "yellow",
+          "status": "Intermedio"
+        },
+        "prov_4": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 3.65,
+          "adjusted_price": 3.65,
+          "adj_percent": 0.0,
+          "color": "red",
+          "status": "Más Alto"
+        }
+      },
+      "preferred_metrics": {
+        "price": 2.94,
+        "is_winner": false,
+        "delta_min": 1.4,
+        "delta_media": -11.4,
+        "competitor_avg": 3.32
+      }
+    },
+    {
+      "master_id": "amlodipina-10mg-x-30-tab",
+      "sku": "SKU-1003",
+      "display_name": "Amlodipina 10mg x 30 Tab",
+      "active_ingredient": "",
+      "category": "General",
+      "unit_of_measure": "Unidad",
+      "is_ims": true,
+      "suppliers": {
+        "prov_1": {
+          "supplier_id": "prov_1",
+          "supplier_name": "Droguería Cobeca",
+          "raw_name": "Amlodipina 10mg x 30 Tab",
+          "base_price": 2.8,
+          "in_stock": true,
+          "product_url": "https://comparadores.drogueriascobeca.com"
+        },
+        "prov_2": {
+          "supplier_id": "prov_2",
+          "supplier_name": "Farmacia Saas",
+          "raw_name": "Amlodipina 10mg x 30 Tab",
+          "base_price": 3.1,
+          "in_stock": true,
+          "product_url": "https://farmaciasaas.com"
+        },
+        "prov_3": {
+          "supplier_id": "prov_3",
+          "supplier_name": "Farmacia Locatel",
+          "raw_name": "Amlodipina 10mg x 30 Tab",
+          "base_price": 2.65,
+          "in_stock": true,
+          "product_url": "https://locatel.com.ve"
+        },
+        "prov_4": {
+          "supplier_id": "prov_4",
+          "supplier_name": "Farmacia Farmatodo",
+          "raw_name": "Amlodipina 10mg x 30 Tab",
+          "base_price": 3.25,
+          "in_stock": true,
+          "product_url": "https://farmatodo.com.ve"
+        }
+      },
+      "min_price": 2.65,
+      "max_price": 3.25,
+      "winner_id": "prov_3",
+      "evaluations": {
+        "prov_1": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 2.8,
+          "adjusted_price": 2.66,
+          "adj_percent": -5.0,
+          "color": "yellow",
+          "status": "Intermedio"
+        },
+        "prov_2": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 3.1,
+          "adjusted_price": 3.1,
+          "adj_percent": 0.0,
+          "color": "yellow",
+          "status": "Intermedio"
+        },
+        "prov_3": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 2.65,
+          "adjusted_price": 2.65,
+          "adj_percent": 0.0,
+          "color": "green",
+          "status": "Mejor Precio"
+        },
+        "prov_4": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 3.25,
+          "adjusted_price": 3.25,
+          "adj_percent": 0.0,
+          "color": "red",
+          "status": "Más Alto"
+        }
+      },
+      "preferred_metrics": {
+        "price": 2.66,
+        "is_winner": false,
+        "delta_min": 0.4,
+        "delta_media": -11.3,
+        "competitor_avg": 3.0
+      }
+    },
+    {
+      "master_id": "carvedilol-25mg-x-30-tab",
+      "sku": "SKU-1004",
+      "display_name": "Carvedilol 25mg x 30 Tab",
+      "active_ingredient": "",
+      "category": "General",
+      "unit_of_measure": "Unidad",
+      "is_ims": true,
+      "suppliers": {
+        "prov_1": {
+          "supplier_id": "prov_1",
+          "supplier_name": "Droguería Cobeca",
+          "raw_name": "Carvedilol 25mg x 30 Tab",
+          "base_price": 5.5,
+          "in_stock": true,
+          "product_url": "https://comparadores.drogueriascobeca.com"
+        },
+        "prov_2": {
+          "supplier_id": "prov_2",
+          "supplier_name": "Farmacia Saas",
+          "raw_name": "Carvedilol 25mg x 30 Tab",
+          "base_price": 5.2,
+          "in_stock": true,
+          "product_url": "https://farmaciasaas.com"
+        },
+        "prov_3": {
+          "supplier_id": "prov_3",
+          "supplier_name": "Farmacia Locatel",
+          "raw_name": "Carvedilol 25mg x 30 Tab",
+          "base_price": 5.85,
+          "in_stock": false,
+          "product_url": "https://locatel.com.ve"
+        },
+        "prov_4": {
+          "supplier_id": "prov_4",
+          "supplier_name": "Farmacia Farmatodo",
+          "raw_name": "Carvedilol 25mg x 30 Tab",
+          "base_price": 6.1,
+          "in_stock": true,
+          "product_url": "https://farmatodo.com.ve"
+        }
+      },
+      "min_price": 5.2,
+      "max_price": 6.1,
+      "winner_id": "prov_2",
+      "evaluations": {
+        "prov_1": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 5.5,
+          "adjusted_price": 5.22,
+          "adj_percent": -5.0,
+          "color": "yellow",
+          "status": "Intermedio"
+        },
+        "prov_2": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 5.2,
+          "adjusted_price": 5.2,
+          "adj_percent": 0.0,
+          "color": "green",
+          "status": "Mejor Precio"
+        },
+        "prov_3": {
+          "has_offer": true,
+          "in_stock": false,
+          "base_price": 5.85,
+          "adjusted_price": null,
+          "color": "gray",
+          "status": "Sin Stock"
+        },
+        "prov_4": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 6.1,
+          "adjusted_price": 6.1,
+          "adj_percent": 0.0,
+          "color": "red",
+          "status": "Más Alto"
+        }
+      },
+      "preferred_metrics": {
+        "price": 5.22,
+        "is_winner": false,
+        "delta_min": 0.4,
+        "delta_media": -7.6,
+        "competitor_avg": 5.65
+      }
+    },
+    {
+      "master_id": "enalapril-maleato-20mg-x-30-tab",
+      "sku": "SKU-1005",
+      "display_name": "Enalapril Maleato 20mg x 30 Tab",
+      "active_ingredient": "",
+      "category": "General",
+      "unit_of_measure": "Unidad",
+      "is_ims": true,
+      "suppliers": {
+        "prov_1": {
+          "supplier_id": "prov_1",
+          "supplier_name": "Droguería Cobeca",
+          "raw_name": "Enalapril Maleato 20mg x 30 Tab",
+          "base_price": 2.2,
+          "in_stock": true,
+          "product_url": "https://comparadores.drogueriascobeca.com"
+        },
+        "prov_2": {
+          "supplier_id": "prov_2",
+          "supplier_name": "Farmacia Saas",
+          "raw_name": "Enalapril Maleato 20mg x 30 Tab",
+          "base_price": 2.15,
+          "in_stock": true,
+          "product_url": "https://farmaciasaas.com"
+        },
+        "prov_3": {
+          "supplier_id": "prov_3",
+          "supplier_name": "Farmacia Locatel",
+          "raw_name": "Enalapril Maleato 20mg x 30 Tab",
+          "base_price": 2.5,
+          "in_stock": true,
+          "product_url": "https://locatel.com.ve"
+        },
+        "prov_4": {
+          "supplier_id": "prov_4",
+          "supplier_name": "Farmacia Farmatodo",
+          "raw_name": "Enalapril Maleato 20mg x 30 Tab",
+          "base_price": 2.7,
+          "in_stock": true,
+          "product_url": "https://farmatodo.com.ve"
+        }
+      },
+      "min_price": 2.09,
+      "max_price": 2.7,
+      "winner_id": "prov_1",
+      "evaluations": {
+        "prov_1": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 2.2,
+          "adjusted_price": 2.09,
+          "adj_percent": -5.0,
+          "color": "green",
+          "status": "Mejor Precio"
+        },
+        "prov_2": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 2.15,
+          "adjusted_price": 2.15,
+          "adj_percent": 0.0,
+          "color": "yellow",
+          "status": "Intermedio"
+        },
+        "prov_3": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 2.5,
+          "adjusted_price": 2.5,
+          "adj_percent": 0.0,
+          "color": "yellow",
+          "status": "Intermedio"
+        },
+        "prov_4": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 2.7,
+          "adjusted_price": 2.7,
+          "adj_percent": 0.0,
+          "color": "red",
+          "status": "Más Alto"
+        }
+      },
+      "preferred_metrics": {
+        "price": 2.09,
+        "is_winner": true,
+        "delta_min": 0.0,
+        "delta_media": -14.7,
+        "competitor_avg": 2.45
+      }
+    },
+    {
+      "master_id": "acetaminofen-500mg-x-20-tab",
+      "sku": "SKU-2001",
+      "display_name": "Acetaminofén 500mg x 20 Tab",
+      "active_ingredient": "",
+      "category": "General",
+      "unit_of_measure": "Unidad",
+      "is_ims": false,
+      "suppliers": {
+        "prov_1": {
+          "supplier_id": "prov_1",
+          "supplier_name": "Droguería Cobeca",
+          "raw_name": "Acetaminofén 500mg x 20 Tab",
+          "base_price": 1.4,
+          "in_stock": true,
+          "product_url": "https://comparadores.drogueriascobeca.com"
+        },
+        "prov_2": {
+          "supplier_id": "prov_2",
+          "supplier_name": "Farmacia Saas",
+          "raw_name": "Acetaminofén 500mg x 20 Tab",
+          "base_price": 1.25,
+          "in_stock": true,
+          "product_url": "https://farmaciasaas.com"
+        },
+        "prov_3": {
+          "supplier_id": "prov_3",
+          "supplier_name": "Farmacia Locatel",
+          "raw_name": "Acetaminofén 500mg x 20 Tab",
+          "base_price": 1.6,
+          "in_stock": true,
+          "product_url": "https://locatel.com.ve"
+        },
+        "prov_4": {
+          "supplier_id": "prov_4",
+          "supplier_name": "Farmacia Farmatodo",
+          "raw_name": "Acetaminofén 500mg x 20 Tab",
+          "base_price": 1.85,
+          "in_stock": true,
+          "product_url": "https://farmatodo.com.ve"
+        }
+      },
+      "min_price": 1.25,
+      "max_price": 1.85,
+      "winner_id": "prov_2",
+      "evaluations": {
+        "prov_1": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 1.4,
+          "adjusted_price": 1.33,
+          "adj_percent": -5.0,
+          "color": "yellow",
+          "status": "Intermedio"
+        },
+        "prov_2": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 1.25,
+          "adjusted_price": 1.25,
+          "adj_percent": 0.0,
+          "color": "green",
+          "status": "Mejor Precio"
+        },
+        "prov_3": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 1.6,
+          "adjusted_price": 1.6,
+          "adj_percent": 0.0,
+          "color": "yellow",
+          "status": "Intermedio"
+        },
+        "prov_4": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 1.85,
+          "adjusted_price": 1.85,
+          "adj_percent": 0.0,
+          "color": "red",
+          "status": "Más Alto"
+        }
+      },
+      "preferred_metrics": {
+        "price": 1.33,
+        "is_winner": false,
+        "delta_min": 6.4,
+        "delta_media": -15.1,
+        "competitor_avg": 1.57
+      }
+    },
+    {
+      "master_id": "ibuprofeno-400mg-x-20-capsulas",
+      "sku": "SKU-2002",
+      "display_name": "Ibuprofeno 400mg x 20 Cápsulas",
+      "active_ingredient": "",
+      "category": "General",
+      "unit_of_measure": "Unidad",
+      "is_ims": false,
+      "suppliers": {
+        "prov_1": {
+          "supplier_id": "prov_1",
+          "supplier_name": "Droguería Cobeca",
+          "raw_name": "Ibuprofeno 400mg x 20 Cápsulas",
+          "base_price": 2.75,
+          "in_stock": true,
+          "product_url": "https://comparadores.drogueriascobeca.com"
+        },
+        "prov_2": {
+          "supplier_id": "prov_2",
+          "supplier_name": "Farmacia Saas",
+          "raw_name": "Ibuprofeno 400mg x 20 Cápsulas",
+          "base_price": 2.9,
+          "in_stock": true,
+          "product_url": "https://farmaciasaas.com"
+        },
+        "prov_3": {
+          "supplier_id": "prov_3",
+          "supplier_name": "Farmacia Locatel",
+          "raw_name": "Ibuprofeno 400mg x 20 Cápsulas",
+          "base_price": 2.5,
+          "in_stock": true,
+          "product_url": "https://locatel.com.ve"
+        },
+        "prov_4": {
+          "supplier_id": "prov_4",
+          "supplier_name": "Farmacia Farmatodo",
+          "raw_name": "Ibuprofeno 400mg x 20 Cápsulas",
+          "base_price": 3.1,
+          "in_stock": true,
+          "product_url": "https://farmatodo.com.ve"
+        }
+      },
+      "min_price": 2.5,
+      "max_price": 3.1,
+      "winner_id": "prov_3",
+      "evaluations": {
+        "prov_1": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 2.75,
+          "adjusted_price": 2.61,
+          "adj_percent": -5.0,
+          "color": "yellow",
+          "status": "Intermedio"
+        },
+        "prov_2": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 2.9,
+          "adjusted_price": 2.9,
+          "adj_percent": 0.0,
+          "color": "yellow",
+          "status": "Intermedio"
+        },
+        "prov_3": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 2.5,
+          "adjusted_price": 2.5,
+          "adj_percent": 0.0,
+          "color": "green",
+          "status": "Mejor Precio"
+        },
+        "prov_4": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 3.1,
+          "adjusted_price": 3.1,
+          "adj_percent": 0.0,
+          "color": "red",
+          "status": "Más Alto"
+        }
+      },
+      "preferred_metrics": {
+        "price": 2.61,
+        "is_winner": false,
+        "delta_min": 4.4,
+        "delta_media": -7.9,
+        "competitor_avg": 2.83
+      }
+    },
+    {
+      "master_id": "ketoprofeno-100mg-x-20-comprimidos",
+      "sku": "SKU-2003",
+      "display_name": "Ketoprofeno 100mg x 20 Comprimidos",
+      "active_ingredient": "",
+      "category": "General",
+      "unit_of_measure": "Unidad",
+      "is_ims": false,
+      "suppliers": {
+        "prov_1": {
+          "supplier_id": "prov_1",
+          "supplier_name": "Droguería Cobeca",
+          "raw_name": "Ketoprofeno 100mg x 20 Comprimidos",
+          "base_price": 4.8,
+          "in_stock": true,
+          "product_url": "https://comparadores.drogueriascobeca.com"
+        },
+        "prov_2": {
+          "supplier_id": "prov_2",
+          "supplier_name": "Farmacia Saas",
+          "raw_name": "Ketoprofeno 100mg x 20 Comprimidos",
+          "base_price": 4.6,
+          "in_stock": true,
+          "product_url": "https://farmaciasaas.com"
+        },
+        "prov_3": {
+          "supplier_id": "prov_3",
+          "supplier_name": "Farmacia Locatel",
+          "raw_name": "Ketoprofeno 100mg x 20 Comprimidos",
+          "base_price": 5.1,
+          "in_stock": true,
+          "product_url": "https://locatel.com.ve"
+        },
+        "prov_4": {
+          "supplier_id": "prov_4",
+          "supplier_name": "Farmacia Farmatodo",
+          "raw_name": "Ketoprofeno 100mg x 20 Comprimidos",
+          "base_price": 5.4,
+          "in_stock": false,
+          "product_url": "https://farmatodo.com.ve"
+        }
+      },
+      "min_price": 4.56,
+      "max_price": 5.1,
+      "winner_id": "prov_1",
+      "evaluations": {
+        "prov_1": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 4.8,
+          "adjusted_price": 4.56,
+          "adj_percent": -5.0,
+          "color": "green",
+          "status": "Mejor Precio"
+        },
+        "prov_2": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 4.6,
+          "adjusted_price": 4.6,
+          "adj_percent": 0.0,
+          "color": "yellow",
+          "status": "Intermedio"
+        },
+        "prov_3": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 5.1,
+          "adjusted_price": 5.1,
+          "adj_percent": 0.0,
+          "color": "red",
+          "status": "Más Alto"
+        },
+        "prov_4": {
+          "has_offer": true,
+          "in_stock": false,
+          "base_price": 5.4,
+          "adjusted_price": null,
+          "color": "gray",
+          "status": "Sin Stock"
+        }
+      },
+      "preferred_metrics": {
+        "price": 4.56,
+        "is_winner": true,
+        "delta_min": 0.0,
+        "delta_media": -6.0,
+        "competitor_avg": 4.85
+      }
+    },
+    {
+      "master_id": "diclofenac-sodico-50mg-x-20-grageas",
+      "sku": "SKU-2004",
+      "display_name": "Diclofenac Sódico 50mg x 20 Grageas",
+      "active_ingredient": "",
+      "category": "General",
+      "unit_of_measure": "Unidad",
+      "is_ims": false,
+      "suppliers": {
+        "prov_1": {
+          "supplier_id": "prov_1",
+          "supplier_name": "Droguería Cobeca",
+          "raw_name": "Diclofenac Sódico 50mg x 20 Grageas",
+          "base_price": 2.1,
+          "in_stock": true,
+          "product_url": "https://comparadores.drogueriascobeca.com"
+        },
+        "prov_2": {
+          "supplier_id": "prov_2",
+          "supplier_name": "Farmacia Saas",
+          "raw_name": "Diclofenac Sódico 50mg x 20 Grageas",
+          "base_price": 2.3,
+          "in_stock": true,
+          "product_url": "https://farmaciasaas.com"
+        },
+        "prov_3": {
+          "supplier_id": "prov_3",
+          "supplier_name": "Farmacia Locatel",
+          "raw_name": "Diclofenac Sódico 50mg x 20 Grageas",
+          "base_price": 1.95,
+          "in_stock": true,
+          "product_url": "https://locatel.com.ve"
+        },
+        "prov_4": {
+          "supplier_id": "prov_4",
+          "supplier_name": "Farmacia Farmatodo",
+          "raw_name": "Diclofenac Sódico 50mg x 20 Grageas",
+          "base_price": 2.45,
+          "in_stock": true,
+          "product_url": "https://farmatodo.com.ve"
+        }
+      },
+      "min_price": 1.95,
+      "max_price": 2.45,
+      "winner_id": "prov_3",
+      "evaluations": {
+        "prov_1": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 2.1,
+          "adjusted_price": 1.99,
+          "adj_percent": -5.0,
+          "color": "yellow",
+          "status": "Intermedio"
+        },
+        "prov_2": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 2.3,
+          "adjusted_price": 2.3,
+          "adj_percent": 0.0,
+          "color": "yellow",
+          "status": "Intermedio"
+        },
+        "prov_3": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 1.95,
+          "adjusted_price": 1.95,
+          "adj_percent": 0.0,
+          "color": "green",
+          "status": "Mejor Precio"
+        },
+        "prov_4": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 2.45,
+          "adjusted_price": 2.45,
+          "adj_percent": 0.0,
+          "color": "red",
+          "status": "Más Alto"
+        }
+      },
+      "preferred_metrics": {
+        "price": 1.99,
+        "is_winner": false,
+        "delta_min": 2.1,
+        "delta_media": -10.9,
+        "competitor_avg": 2.23
+      }
+    },
+    {
+      "master_id": "amoxicilina-clavulanico-875125mg-x-14",
+      "sku": "SKU-3001",
+      "display_name": "Amoxicilina + Clavulánico 875/125mg x 14",
+      "active_ingredient": "",
+      "category": "General",
+      "unit_of_measure": "Unidad",
+      "is_ims": false,
+      "suppliers": {
+        "prov_1": {
+          "supplier_id": "prov_1",
+          "supplier_name": "Droguería Cobeca",
+          "raw_name": "Amoxicilina + Clavulánico 875/125mg x 14",
+          "base_price": 11.5,
+          "in_stock": true,
+          "product_url": "https://comparadores.drogueriascobeca.com"
+        },
+        "prov_2": {
+          "supplier_id": "prov_2",
+          "supplier_name": "Farmacia Saas",
+          "raw_name": "Amoxicilina + Clavulánico 875/125mg x 14",
+          "base_price": 12.1,
+          "in_stock": true,
+          "product_url": "https://farmaciasaas.com"
+        },
+        "prov_3": {
+          "supplier_id": "prov_3",
+          "supplier_name": "Farmacia Locatel",
+          "raw_name": "Amoxicilina + Clavulánico 875/125mg x 14",
+          "base_price": 10.8,
+          "in_stock": true,
+          "product_url": "https://locatel.com.ve"
+        },
+        "prov_4": {
+          "supplier_id": "prov_4",
+          "supplier_name": "Farmacia Farmatodo",
+          "raw_name": "Amoxicilina + Clavulánico 875/125mg x 14",
+          "base_price": 12.9,
+          "in_stock": true,
+          "product_url": "https://farmatodo.com.ve"
+        }
+      },
+      "min_price": 10.8,
+      "max_price": 12.9,
+      "winner_id": "prov_3",
+      "evaluations": {
+        "prov_1": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 11.5,
+          "adjusted_price": 10.92,
+          "adj_percent": -5.0,
+          "color": "yellow",
+          "status": "Intermedio"
+        },
+        "prov_2": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 12.1,
+          "adjusted_price": 12.1,
+          "adj_percent": 0.0,
+          "color": "yellow",
+          "status": "Intermedio"
+        },
+        "prov_3": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 10.8,
+          "adjusted_price": 10.8,
+          "adj_percent": 0.0,
+          "color": "green",
+          "status": "Mejor Precio"
+        },
+        "prov_4": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 12.9,
+          "adjusted_price": 12.9,
+          "adj_percent": 0.0,
+          "color": "red",
+          "status": "Más Alto"
+        }
+      },
+      "preferred_metrics": {
+        "price": 10.92,
+        "is_winner": false,
+        "delta_min": 1.1,
+        "delta_media": -8.5,
+        "competitor_avg": 11.93
+      }
+    },
+    {
+      "master_id": "azitromicina-500mg-x-3-tab",
+      "sku": "SKU-3002",
+      "display_name": "Azitromicina 500mg x 3 Tab",
+      "active_ingredient": "",
+      "category": "General",
+      "unit_of_measure": "Unidad",
+      "is_ims": false,
+      "suppliers": {
+        "prov_1": {
+          "supplier_id": "prov_1",
+          "supplier_name": "Droguería Cobeca",
+          "raw_name": "Azitromicina 500mg x 3 Tab",
+          "base_price": 4.6,
+          "in_stock": true,
+          "product_url": "https://comparadores.drogueriascobeca.com"
+        },
+        "prov_2": {
+          "supplier_id": "prov_2",
+          "supplier_name": "Farmacia Saas",
+          "raw_name": "Azitromicina 500mg x 3 Tab",
+          "base_price": 4.2,
+          "in_stock": true,
+          "product_url": "https://farmaciasaas.com"
+        },
+        "prov_3": {
+          "supplier_id": "prov_3",
+          "supplier_name": "Farmacia Locatel",
+          "raw_name": "Azitromicina 500mg x 3 Tab",
+          "base_price": 4.9,
+          "in_stock": true,
+          "product_url": "https://locatel.com.ve"
+        },
+        "prov_4": {
+          "supplier_id": "prov_4",
+          "supplier_name": "Farmacia Farmatodo",
+          "raw_name": "Azitromicina 500mg x 3 Tab",
+          "base_price": 5.2,
+          "in_stock": true,
+          "product_url": "https://farmatodo.com.ve"
+        }
+      },
+      "min_price": 4.2,
+      "max_price": 5.2,
+      "winner_id": "prov_2",
+      "evaluations": {
+        "prov_1": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 4.6,
+          "adjusted_price": 4.37,
+          "adj_percent": -5.0,
+          "color": "yellow",
+          "status": "Intermedio"
+        },
+        "prov_2": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 4.2,
+          "adjusted_price": 4.2,
+          "adj_percent": 0.0,
+          "color": "green",
+          "status": "Mejor Precio"
+        },
+        "prov_3": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 4.9,
+          "adjusted_price": 4.9,
+          "adj_percent": 0.0,
+          "color": "yellow",
+          "status": "Intermedio"
+        },
+        "prov_4": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 5.2,
+          "adjusted_price": 5.2,
+          "adj_percent": 0.0,
+          "color": "red",
+          "status": "Más Alto"
+        }
+      },
+      "preferred_metrics": {
+        "price": 4.37,
+        "is_winner": false,
+        "delta_min": 4.0,
+        "delta_media": -8.3,
+        "competitor_avg": 4.77
+      }
+    },
+    {
+      "master_id": "ciprofloxacina-500mg-x-10-tab",
+      "sku": "SKU-3003",
+      "display_name": "Ciprofloxacina 500mg x 10 Tab",
+      "active_ingredient": "",
+      "category": "General",
+      "unit_of_measure": "Unidad",
+      "is_ims": false,
+      "suppliers": {
+        "prov_1": {
+          "supplier_id": "prov_1",
+          "supplier_name": "Droguería Cobeca",
+          "raw_name": "Ciprofloxacina 500mg x 10 Tab",
+          "base_price": 5.3,
+          "in_stock": true,
+          "product_url": "https://comparadores.drogueriascobeca.com"
+        },
+        "prov_2": {
+          "supplier_id": "prov_2",
+          "supplier_name": "Farmacia Saas",
+          "raw_name": "Ciprofloxacina 500mg x 10 Tab",
+          "base_price": 5.6,
+          "in_stock": true,
+          "product_url": "https://farmaciasaas.com"
+        },
+        "prov_3": {
+          "supplier_id": "prov_3",
+          "supplier_name": "Farmacia Locatel",
+          "raw_name": "Ciprofloxacina 500mg x 10 Tab",
+          "base_price": 5.0,
+          "in_stock": true,
+          "product_url": "https://locatel.com.ve"
+        },
+        "prov_4": {
+          "supplier_id": "prov_4",
+          "supplier_name": "Farmacia Farmatodo",
+          "raw_name": "Ciprofloxacina 500mg x 10 Tab",
+          "base_price": 5.9,
+          "in_stock": true,
+          "product_url": "https://farmatodo.com.ve"
+        }
+      },
+      "min_price": 5.0,
+      "max_price": 5.9,
+      "winner_id": "prov_3",
+      "evaluations": {
+        "prov_1": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 5.3,
+          "adjusted_price": 5.03,
+          "adj_percent": -5.0,
+          "color": "yellow",
+          "status": "Intermedio"
+        },
+        "prov_2": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 5.6,
+          "adjusted_price": 5.6,
+          "adj_percent": 0.0,
+          "color": "yellow",
+          "status": "Intermedio"
+        },
+        "prov_3": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 5.0,
+          "adjusted_price": 5.0,
+          "adj_percent": 0.0,
+          "color": "green",
+          "status": "Mejor Precio"
+        },
+        "prov_4": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 5.9,
+          "adjusted_price": 5.9,
+          "adj_percent": 0.0,
+          "color": "red",
+          "status": "Más Alto"
+        }
+      },
+      "preferred_metrics": {
+        "price": 5.03,
+        "is_winner": false,
+        "delta_min": 0.6,
+        "delta_media": -8.5,
+        "competitor_avg": 5.5
+      }
+    },
+    {
+      "master_id": "omeprazol-20mg-x-28-capsulas",
+      "sku": "SKU-4001",
+      "display_name": "Omeprazol 20mg x 28 Cápsulas",
+      "active_ingredient": "",
+      "category": "General",
+      "unit_of_measure": "Unidad",
+      "is_ims": false,
+      "suppliers": {
+        "prov_1": {
+          "supplier_id": "prov_1",
+          "supplier_name": "Droguería Cobeca",
+          "raw_name": "Omeprazol 20mg x 28 Cápsulas",
+          "base_price": 3.2,
+          "in_stock": true,
+          "product_url": "https://comparadores.drogueriascobeca.com"
+        },
+        "prov_2": {
+          "supplier_id": "prov_2",
+          "supplier_name": "Farmacia Saas",
+          "raw_name": "Omeprazol 20mg x 28 Cápsulas",
+          "base_price": 3.4,
+          "in_stock": true,
+          "product_url": "https://farmaciasaas.com"
+        },
+        "prov_3": {
+          "supplier_id": "prov_3",
+          "supplier_name": "Farmacia Locatel",
+          "raw_name": "Omeprazol 20mg x 28 Cápsulas",
+          "base_price": 2.95,
+          "in_stock": true,
+          "product_url": "https://locatel.com.ve"
+        },
+        "prov_4": {
+          "supplier_id": "prov_4",
+          "supplier_name": "Farmacia Farmatodo",
+          "raw_name": "Omeprazol 20mg x 28 Cápsulas",
+          "base_price": 3.6,
+          "in_stock": true,
+          "product_url": "https://farmatodo.com.ve"
+        }
+      },
+      "min_price": 2.95,
+      "max_price": 3.6,
+      "winner_id": "prov_3",
+      "evaluations": {
+        "prov_1": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 3.2,
+          "adjusted_price": 3.04,
+          "adj_percent": -5.0,
+          "color": "yellow",
+          "status": "Intermedio"
+        },
+        "prov_2": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 3.4,
+          "adjusted_price": 3.4,
+          "adj_percent": 0.0,
+          "color": "yellow",
+          "status": "Intermedio"
+        },
+        "prov_3": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 2.95,
+          "adjusted_price": 2.95,
+          "adj_percent": 0.0,
+          "color": "green",
+          "status": "Mejor Precio"
+        },
+        "prov_4": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 3.6,
+          "adjusted_price": 3.6,
+          "adj_percent": 0.0,
+          "color": "red",
+          "status": "Más Alto"
+        }
+      },
+      "preferred_metrics": {
+        "price": 3.04,
+        "is_winner": false,
+        "delta_min": 3.1,
+        "delta_media": -8.3,
+        "competitor_avg": 3.32
+      }
+    },
+    {
+      "master_id": "pantoprazol-40mg-x-28-comprimidos",
+      "sku": "SKU-4002",
+      "display_name": "Pantoprazol 40mg x 28 Comprimidos",
+      "active_ingredient": "",
+      "category": "General",
+      "unit_of_measure": "Unidad",
+      "is_ims": false,
+      "suppliers": {
+        "prov_1": {
+          "supplier_id": "prov_1",
+          "supplier_name": "Droguería Cobeca",
+          "raw_name": "Pantoprazol 40mg x 28 Comprimidos",
+          "base_price": 6.8,
+          "in_stock": true,
+          "product_url": "https://comparadores.drogueriascobeca.com"
+        },
+        "prov_2": {
+          "supplier_id": "prov_2",
+          "supplier_name": "Farmacia Saas",
+          "raw_name": "Pantoprazol 40mg x 28 Comprimidos",
+          "base_price": 6.4,
+          "in_stock": true,
+          "product_url": "https://farmaciasaas.com"
+        },
+        "prov_3": {
+          "supplier_id": "prov_3",
+          "supplier_name": "Farmacia Locatel",
+          "raw_name": "Pantoprazol 40mg x 28 Comprimidos",
+          "base_price": 7.1,
+          "in_stock": true,
+          "product_url": "https://locatel.com.ve"
+        },
+        "prov_4": {
+          "supplier_id": "prov_4",
+          "supplier_name": "Farmacia Farmatodo",
+          "raw_name": "Pantoprazol 40mg x 28 Comprimidos",
+          "base_price": 7.5,
+          "in_stock": true,
+          "product_url": "https://farmatodo.com.ve"
+        }
+      },
+      "min_price": 6.4,
+      "max_price": 7.5,
+      "winner_id": "prov_2",
+      "evaluations": {
+        "prov_1": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 6.8,
+          "adjusted_price": 6.46,
+          "adj_percent": -5.0,
+          "color": "yellow",
+          "status": "Intermedio"
+        },
+        "prov_2": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 6.4,
+          "adjusted_price": 6.4,
+          "adj_percent": 0.0,
+          "color": "green",
+          "status": "Mejor Precio"
+        },
+        "prov_3": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 7.1,
+          "adjusted_price": 7.1,
+          "adj_percent": 0.0,
+          "color": "yellow",
+          "status": "Intermedio"
+        },
+        "prov_4": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 7.5,
+          "adjusted_price": 7.5,
+          "adj_percent": 0.0,
+          "color": "red",
+          "status": "Más Alto"
+        }
+      },
+      "preferred_metrics": {
+        "price": 6.46,
+        "is_winner": false,
+        "delta_min": 0.9,
+        "delta_media": -7.7,
+        "competitor_avg": 7.0
+      }
+    },
+    {
+      "master_id": "loratadina-10mg-x-10-tab",
+      "sku": "SKU-5001",
+      "display_name": "Loratadina 10mg x 10 Tab",
+      "active_ingredient": "",
+      "category": "General",
+      "unit_of_measure": "Unidad",
+      "is_ims": false,
+      "suppliers": {
+        "prov_1": {
+          "supplier_id": "prov_1",
+          "supplier_name": "Droguería Cobeca",
+          "raw_name": "Loratadina 10mg x 10 Tab",
+          "base_price": 1.8,
+          "in_stock": true,
+          "product_url": "https://comparadores.drogueriascobeca.com"
+        },
+        "prov_2": {
+          "supplier_id": "prov_2",
+          "supplier_name": "Farmacia Saas",
+          "raw_name": "Loratadina 10mg x 10 Tab",
+          "base_price": 1.65,
+          "in_stock": true,
+          "product_url": "https://farmaciasaas.com"
+        },
+        "prov_3": {
+          "supplier_id": "prov_3",
+          "supplier_name": "Farmacia Locatel",
+          "raw_name": "Loratadina 10mg x 10 Tab",
+          "base_price": 1.95,
+          "in_stock": true,
+          "product_url": "https://locatel.com.ve"
+        },
+        "prov_4": {
+          "supplier_id": "prov_4",
+          "supplier_name": "Farmacia Farmatodo",
+          "raw_name": "Loratadina 10mg x 10 Tab",
+          "base_price": 2.1,
+          "in_stock": true,
+          "product_url": "https://farmatodo.com.ve"
+        }
+      },
+      "min_price": 1.65,
+      "max_price": 2.1,
+      "winner_id": "prov_2",
+      "evaluations": {
+        "prov_1": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 1.8,
+          "adjusted_price": 1.71,
+          "adj_percent": -5.0,
+          "color": "yellow",
+          "status": "Intermedio"
+        },
+        "prov_2": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 1.65,
+          "adjusted_price": 1.65,
+          "adj_percent": 0.0,
+          "color": "green",
+          "status": "Mejor Precio"
+        },
+        "prov_3": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 1.95,
+          "adjusted_price": 1.95,
+          "adj_percent": 0.0,
+          "color": "yellow",
+          "status": "Intermedio"
+        },
+        "prov_4": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 2.1,
+          "adjusted_price": 2.1,
+          "adj_percent": 0.0,
+          "color": "red",
+          "status": "Más Alto"
+        }
+      },
+      "preferred_metrics": {
+        "price": 1.71,
+        "is_winner": false,
+        "delta_min": 3.6,
+        "delta_media": -10.0,
+        "competitor_avg": 1.9
+      }
+    },
+    {
+      "master_id": "cetirizina-10mg-x-10-tab",
+      "sku": "SKU-5002",
+      "display_name": "Cetirizina 10mg x 10 Tab",
+      "active_ingredient": "",
+      "category": "General",
+      "unit_of_measure": "Unidad",
+      "is_ims": false,
+      "suppliers": {
+        "prov_1": {
+          "supplier_id": "prov_1",
+          "supplier_name": "Droguería Cobeca",
+          "raw_name": "Cetirizina 10mg x 10 Tab",
+          "base_price": 2.4,
+          "in_stock": true,
+          "product_url": "https://comparadores.drogueriascobeca.com"
+        },
+        "prov_2": {
+          "supplier_id": "prov_2",
+          "supplier_name": "Farmacia Saas",
+          "raw_name": "Cetirizina 10mg x 10 Tab",
+          "base_price": 2.6,
+          "in_stock": true,
+          "product_url": "https://farmaciasaas.com"
+        },
+        "prov_3": {
+          "supplier_id": "prov_3",
+          "supplier_name": "Farmacia Locatel",
+          "raw_name": "Cetirizina 10mg x 10 Tab",
+          "base_price": 2.15,
+          "in_stock": true,
+          "product_url": "https://locatel.com.ve"
+        },
+        "prov_4": {
+          "supplier_id": "prov_4",
+          "supplier_name": "Farmacia Farmatodo",
+          "raw_name": "Cetirizina 10mg x 10 Tab",
+          "base_price": 2.8,
+          "in_stock": true,
+          "product_url": "https://farmatodo.com.ve"
+        }
+      },
+      "min_price": 2.15,
+      "max_price": 2.8,
+      "winner_id": "prov_3",
+      "evaluations": {
+        "prov_1": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 2.4,
+          "adjusted_price": 2.28,
+          "adj_percent": -5.0,
+          "color": "yellow",
+          "status": "Intermedio"
+        },
+        "prov_2": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 2.6,
+          "adjusted_price": 2.6,
+          "adj_percent": 0.0,
+          "color": "yellow",
+          "status": "Intermedio"
+        },
+        "prov_3": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 2.15,
+          "adjusted_price": 2.15,
+          "adj_percent": 0.0,
+          "color": "green",
+          "status": "Mejor Precio"
+        },
+        "prov_4": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 2.8,
+          "adjusted_price": 2.8,
+          "adj_percent": 0.0,
+          "color": "red",
+          "status": "Más Alto"
+        }
+      },
+      "preferred_metrics": {
+        "price": 2.28,
+        "is_winner": false,
+        "delta_min": 6.0,
+        "delta_media": -9.4,
+        "competitor_avg": 2.52
+      }
+    },
+    {
+      "master_id": "metformina-850mg-x-30-tab",
+      "sku": "SKU-6001",
+      "display_name": "Metformina 850mg x 30 Tab",
+      "active_ingredient": "",
+      "category": "General",
+      "unit_of_measure": "Unidad",
+      "is_ims": false,
+      "suppliers": {
+        "prov_1": {
+          "supplier_id": "prov_1",
+          "supplier_name": "Droguería Cobeca",
+          "raw_name": "Metformina 850mg x 30 Tab",
+          "base_price": 3.5,
+          "in_stock": true,
+          "product_url": "https://comparadores.drogueriascobeca.com"
+        },
+        "prov_2": {
+          "supplier_id": "prov_2",
+          "supplier_name": "Farmacia Saas",
+          "raw_name": "Metformina 850mg x 30 Tab",
+          "base_price": 3.2,
+          "in_stock": true,
+          "product_url": "https://farmaciasaas.com"
+        },
+        "prov_3": {
+          "supplier_id": "prov_3",
+          "supplier_name": "Farmacia Locatel",
+          "raw_name": "Metformina 850mg x 30 Tab",
+          "base_price": 3.8,
+          "in_stock": true,
+          "product_url": "https://locatel.com.ve"
+        },
+        "prov_4": {
+          "supplier_id": "prov_4",
+          "supplier_name": "Farmacia Farmatodo",
+          "raw_name": "Metformina 850mg x 30 Tab",
+          "base_price": 4.1,
+          "in_stock": true,
+          "product_url": "https://farmatodo.com.ve"
+        }
+      },
+      "min_price": 3.2,
+      "max_price": 4.1,
+      "winner_id": "prov_2",
+      "evaluations": {
+        "prov_1": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 3.5,
+          "adjusted_price": 3.32,
+          "adj_percent": -5.0,
+          "color": "yellow",
+          "status": "Intermedio"
+        },
+        "prov_2": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 3.2,
+          "adjusted_price": 3.2,
+          "adj_percent": 0.0,
+          "color": "green",
+          "status": "Mejor Precio"
+        },
+        "prov_3": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 3.8,
+          "adjusted_price": 3.8,
+          "adj_percent": 0.0,
+          "color": "yellow",
+          "status": "Intermedio"
+        },
+        "prov_4": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 4.1,
+          "adjusted_price": 4.1,
+          "adj_percent": 0.0,
+          "color": "red",
+          "status": "Más Alto"
+        }
+      },
+      "preferred_metrics": {
+        "price": 3.32,
+        "is_winner": false,
+        "delta_min": 3.7,
+        "delta_media": -10.3,
+        "competitor_avg": 3.7
+      }
+    },
+    {
+      "master_id": "sertralina-50mg-x-30-comprimidos",
+      "sku": "SKU-7001",
+      "display_name": "Sertralina 50mg x 30 Comprimidos",
+      "active_ingredient": "",
+      "category": "General",
+      "unit_of_measure": "Unidad",
+      "is_ims": false,
+      "suppliers": {
+        "prov_1": {
+          "supplier_id": "prov_1",
+          "supplier_name": "Droguería Cobeca",
+          "raw_name": "Sertralina 50mg x 30 Comprimidos",
+          "base_price": 7.8,
+          "in_stock": true,
+          "product_url": "https://comparadores.drogueriascobeca.com"
+        },
+        "prov_2": {
+          "supplier_id": "prov_2",
+          "supplier_name": "Farmacia Saas",
+          "raw_name": "Sertralina 50mg x 30 Comprimidos",
+          "base_price": 8.2,
+          "in_stock": true,
+          "product_url": "https://farmaciasaas.com"
+        },
+        "prov_3": {
+          "supplier_id": "prov_3",
+          "supplier_name": "Farmacia Locatel",
+          "raw_name": "Sertralina 50mg x 30 Comprimidos",
+          "base_price": 7.4,
+          "in_stock": true,
+          "product_url": "https://locatel.com.ve"
+        },
+        "prov_4": {
+          "supplier_id": "prov_4",
+          "supplier_name": "Farmacia Farmatodo",
+          "raw_name": "Sertralina 50mg x 30 Comprimidos",
+          "base_price": 8.9,
+          "in_stock": true,
+          "product_url": "https://farmatodo.com.ve"
+        }
+      },
+      "min_price": 7.4,
+      "max_price": 8.9,
+      "winner_id": "prov_3",
+      "evaluations": {
+        "prov_1": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 7.8,
+          "adjusted_price": 7.41,
+          "adj_percent": -5.0,
+          "color": "yellow",
+          "status": "Intermedio"
+        },
+        "prov_2": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 8.2,
+          "adjusted_price": 8.2,
+          "adj_percent": 0.0,
+          "color": "yellow",
+          "status": "Intermedio"
+        },
+        "prov_3": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 7.4,
+          "adjusted_price": 7.4,
+          "adj_percent": 0.0,
+          "color": "green",
+          "status": "Mejor Precio"
+        },
+        "prov_4": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 8.9,
+          "adjusted_price": 8.9,
+          "adj_percent": 0.0,
+          "color": "red",
+          "status": "Más Alto"
+        }
+      },
+      "preferred_metrics": {
+        "price": 7.41,
+        "is_winner": false,
+        "delta_min": 0.1,
+        "delta_media": -9.3,
+        "competitor_avg": 8.17
+      }
+    },
+    {
+      "master_id": "betametasona-crema-005-x-30g",
+      "sku": "SKU-8001",
+      "display_name": "Betametasona Crema 0.05% x 30g",
+      "active_ingredient": "",
+      "category": "General",
+      "unit_of_measure": "Unidad",
+      "is_ims": false,
+      "suppliers": {
+        "prov_1": {
+          "supplier_id": "prov_1",
+          "supplier_name": "Droguería Cobeca",
+          "raw_name": "Betametasona Crema 0.05% x 30g",
+          "base_price": 3.4,
+          "in_stock": true,
+          "product_url": "https://comparadores.drogueriascobeca.com"
+        },
+        "prov_2": {
+          "supplier_id": "prov_2",
+          "supplier_name": "Farmacia Saas",
+          "raw_name": "Betametasona Crema 0.05% x 30g",
+          "base_price": 3.6,
+          "in_stock": true,
+          "product_url": "https://farmaciasaas.com"
+        },
+        "prov_3": {
+          "supplier_id": "prov_3",
+          "supplier_name": "Farmacia Locatel",
+          "raw_name": "Betametasona Crema 0.05% x 30g",
+          "base_price": 3.15,
+          "in_stock": true,
+          "product_url": "https://locatel.com.ve"
+        },
+        "prov_4": {
+          "supplier_id": "prov_4",
+          "supplier_name": "Farmacia Farmatodo",
+          "raw_name": "Betametasona Crema 0.05% x 30g",
+          "base_price": 3.85,
+          "in_stock": true,
+          "product_url": "https://farmatodo.com.ve"
+        }
+      },
+      "min_price": 3.15,
+      "max_price": 3.85,
+      "winner_id": "prov_3",
+      "evaluations": {
+        "prov_1": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 3.4,
+          "adjusted_price": 3.23,
+          "adj_percent": -5.0,
+          "color": "yellow",
+          "status": "Intermedio"
+        },
+        "prov_2": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 3.6,
+          "adjusted_price": 3.6,
+          "adj_percent": 0.0,
+          "color": "yellow",
+          "status": "Intermedio"
+        },
+        "prov_3": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 3.15,
+          "adjusted_price": 3.15,
+          "adj_percent": 0.0,
+          "color": "green",
+          "status": "Mejor Precio"
+        },
+        "prov_4": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 3.85,
+          "adjusted_price": 3.85,
+          "adj_percent": 0.0,
+          "color": "red",
+          "status": "Más Alto"
+        }
+      },
+      "preferred_metrics": {
+        "price": 3.23,
+        "is_winner": false,
+        "delta_min": 2.5,
+        "delta_media": -8.6,
+        "competitor_avg": 3.53
+      }
+    },
+    {
+      "master_id": "vitamina-c-1000mg-x-10-tab-efervescentes",
+      "sku": "SKU-9001",
+      "display_name": "Vitamina C 1000mg x 10 Tab Efervescentes",
+      "active_ingredient": "",
+      "category": "General",
+      "unit_of_measure": "Unidad",
+      "is_ims": false,
+      "suppliers": {
+        "prov_1": {
+          "supplier_id": "prov_1",
+          "supplier_name": "Droguería Cobeca",
+          "raw_name": "Vitamina C 1000mg x 10 Tab Efervescentes",
+          "base_price": 3.9,
+          "in_stock": true,
+          "product_url": "https://comparadores.drogueriascobeca.com"
+        },
+        "prov_2": {
+          "supplier_id": "prov_2",
+          "supplier_name": "Farmacia Saas",
+          "raw_name": "Vitamina C 1000mg x 10 Tab Efervescentes",
+          "base_price": 4.2,
+          "in_stock": true,
+          "product_url": "https://farmaciasaas.com"
+        },
+        "prov_3": {
+          "supplier_id": "prov_3",
+          "supplier_name": "Farmacia Locatel",
+          "raw_name": "Vitamina C 1000mg x 10 Tab Efervescentes",
+          "base_price": 3.6,
+          "in_stock": true,
+          "product_url": "https://locatel.com.ve"
+        },
+        "prov_4": {
+          "supplier_id": "prov_4",
+          "supplier_name": "Farmacia Farmatodo",
+          "raw_name": "Vitamina C 1000mg x 10 Tab Efervescentes",
+          "base_price": 4.5,
+          "in_stock": true,
+          "product_url": "https://farmatodo.com.ve"
+        }
+      },
+      "min_price": 3.6,
+      "max_price": 4.5,
+      "winner_id": "prov_3",
+      "evaluations": {
+        "prov_1": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 3.9,
+          "adjusted_price": 3.7,
+          "adj_percent": -5.0,
+          "color": "yellow",
+          "status": "Intermedio"
+        },
+        "prov_2": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 4.2,
+          "adjusted_price": 4.2,
+          "adj_percent": 0.0,
+          "color": "yellow",
+          "status": "Intermedio"
+        },
+        "prov_3": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 3.6,
+          "adjusted_price": 3.6,
+          "adj_percent": 0.0,
+          "color": "green",
+          "status": "Mejor Precio"
+        },
+        "prov_4": {
+          "has_offer": true,
+          "in_stock": true,
+          "base_price": 4.5,
+          "adjusted_price": 4.5,
+          "adj_percent": 0.0,
+          "color": "red",
+          "status": "Más Alto"
+        }
+      },
+      "preferred_metrics": {
+        "price": 3.7,
+        "is_winner": false,
+        "delta_min": 2.8,
+        "delta_media": -9.8,
+        "competitor_avg": 4.1
+      }
+    }
+  ],
+  "provider_benchmarks": {
+    "prov_1": {
+      "id": "prov_1",
+      "name": "Droguería Cobeca",
+      "short_name": "Cobeca",
+      "quoted_count": 20,
+      "missing_count": 0,
+      "win_count": 2,
+      "win_rate": 10.0,
+      "basket_total": 78.86,
+      "ims_quoted_count": 5,
+      "ims_win_count": 1,
+      "ims_win_rate": 20.0,
+      "ims_basket_total": 16.9,
+      "icc": 2.0,
+      "completeness_rate": 100.0
+    },
+    "prov_2": {
+      "id": "prov_2",
+      "name": "Farmacia Saas",
+      "short_name": "Saas",
+      "quoted_count": 20,
+      "missing_count": 0,
+      "win_count": 7,
+      "win_rate": 35.0,
+      "basket_total": 84.0,
+      "ims_quoted_count": 5,
+      "ims_win_count": 2,
+      "ims_win_rate": 40.0,
+      "ims_basket_total": 17.8,
+      "icc": 1.14,
+      "completeness_rate": 100.0
+    },
+    "prov_3": {
+      "id": "prov_3",
+      "name": "Farmacia Locatel",
+      "short_name": "Locatel",
+      "quoted_count": 19,
+      "missing_count": 1,
+      "win_count": 11,
+      "win_rate": 57.9,
+      "basket_total": 76.45,
+      "ims_quoted_count": 4,
+      "ims_win_count": 2,
+      "ims_win_rate": 50.0,
+      "ims_basket_total": 12.5,
+      "icc": 0.86,
+      "completeness_rate": 95.0
+    },
+    "prov_4": {
+      "id": "prov_4",
+      "name": "Farmacia Farmatodo",
+      "short_name": "Farmatodo",
+      "quoted_count": 19,
+      "missing_count": 1,
+      "win_count": 0,
+      "win_rate": 0.0,
+      "basket_total": 89.25,
+      "ims_quoted_count": 5,
+      "ims_win_count": 0,
+      "ims_win_rate": 0.0,
+      "ims_basket_total": 20.5,
+      "icc": 1.0,
+      "completeness_rate": 95.0
+    }
+  },
+  "preferred_provider_id": "prov_1"
+}
