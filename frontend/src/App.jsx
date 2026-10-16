@@ -1,14 +1,15 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import {
   Download,
   FileSpreadsheet,
   Building2,
-  CheckCircle2
+  CheckCircle2,
+  LogOut,
+  Loader2
 } from 'lucide-react';
 
 import { INITIAL_CATALOG } from './data/mockPharmacyData';
 import {
-  DEFAULT_PROVIDERS,
   evaluateProductRow,
   calculateProviderBenchmarks,
   calculateIMSMetrics
@@ -17,10 +18,10 @@ import { exportComparisonToCSV, exportExecutiveSummary } from './utils/exportUti
 import {
   saveScenarioToFirestore,
   fetchScenariosFromFirestore,
-  deleteScenarioFromFirestore,
-  savePharmacyCredentialsToFirestore
+  deleteScenarioFromFirestore
 } from './services/firebaseService';
 
+import LoginView from './components/auth/LoginView';
 import Sidebar from './components/layout/Sidebar';
 import ExecutiveDashboard from './components/dashboard/ExecutiveDashboard';
 import PriceAdjusterControls from './components/comparison/PriceAdjusterControls';
@@ -30,6 +31,8 @@ import ProviderBenchmark from './components/analytics/ProviderBenchmark';
 import IMSCriticalAnalysis from './components/analytics/IMSCriticalAnalysis';
 import ScenariosView from './components/scenarios/ScenariosView';
 import PharmacyConnections from './components/connections/PharmacyConnections';
+
+const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8000';
 
 const INITIAL_PRESET_SCENARIOS = [
   {
@@ -58,36 +61,89 @@ const INITIAL_PRESET_SCENARIOS = [
   }
 ];
 
-const DEFAULT_CREDENTIALS = {
-  prov_1: {
-    apiUrl: 'https://comparadores.drogueriascobeca.com/api/articulos/drogueria',
-    apiKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
-    drogueriaId: '7'
-  },
-  prov_2: {
-    username: 'cliente.saas.occidente',
-    password: '',
-    branch: 'Sede Principal'
-  },
-  prov_3: {
-    username: 'farmacia.locatel.central',
-    password: '',
-    branch: 'Centro Distribución 1'
-  },
-  prov_4: {
-    username: 'cuenta.farmatodo.b2b',
-    password: '',
-    branch: 'Nacional'
-  }
-};
-
 export default function App() {
+  // ── Autenticación ─────────────────────────────────────────────────────────
+  const [authSession, setAuthSession] = useState(() => {
+    const token = sessionStorage.getItem('app_token');
+    if (!token) return null;
+    return {
+      token,
+      userName: sessionStorage.getItem('user_name') || '',
+      userCode: sessionStorage.getItem('user_code') || '',
+      drogueriaId: sessionStorage.getItem('drogueria_id') || '7',
+      drogueriaName: sessionStorage.getItem('drogueria_name') || 'Cobeca',
+    };
+  });
+
+  const handleLoginSuccess = (session) => {
+    setAuthSession(session);
+  };
+
+  const handleLogout = () => {
+    sessionStorage.removeItem('app_token');
+    sessionStorage.removeItem('user_name');
+    sessionStorage.removeItem('user_code');
+    sessionStorage.removeItem('drogueria_id');
+    sessionStorage.removeItem('drogueria_name');
+    setAuthSession(null);
+  };
+
+  // Si no hay sesión activa, mostrar login
+  if (!authSession) {
+    return <LoginView onLoginSuccess={handleLoginSuccess} />;
+  }
+
+  return <MainApp authSession={authSession} onLogout={handleLogout} />;
+}
+
+function MainApp({ authSession, onLogout }) {
   // Navegación Activa
   const [activeSection, setActiveSection] = useState('dashboard');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
-  // Catálogo de Productos
-  const [products] = useState(INITIAL_CATALOG);
+  // Catálogo de Productos (Inicia con datos base y carga los 6,800+ de Cobeca en vivo)
+  const [products, setProducts] = useState(INITIAL_CATALOG);
+  const [isCatalogLoading, setIsCatalogLoading] = useState(false);
+
+  const loadCatalog = useCallback(async () => {
+    if (!authSession?.token) return;
+    setIsCatalogLoading(true);
+    try {
+      const resp = await fetch(`${API_BASE}/api/catalog?full=true`, {
+        headers: { Authorization: `Bearer ${authSession.token}` }
+      });
+      if (resp.ok) {
+        const data = await resp.json();
+        if (data.items && data.items.length > 0) {
+          setProducts(data.items);
+        }
+      }
+    } catch (e) {
+      console.warn('Usando catálogo inicial:', e);
+    } finally {
+      setIsCatalogLoading(false);
+    }
+  }, [authSession.token]);
+
+  useEffect(() => {
+    let isCurrent = true;
+    if (!authSession.token) return;
+
+    fetch(`${API_BASE}/api/catalog?full=true`, {
+      headers: { Authorization: `Bearer ${authSession.token}` }
+    })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (isCurrent && data?.items?.length) {
+          setProducts(data.items);
+        }
+      })
+      .catch((err) => console.warn('Catálogo base cargado:', err));
+
+    return () => {
+      isCurrent = false;
+    };
+  }, [authSession.token]);
 
   // Ajustes de Descuento (% por farmacia)
   const [adjustments, setAdjustments] = useState({
@@ -106,22 +162,12 @@ export default function App() {
   const [imsOnly, setImsOnly] = useState(false);
   const [deviationFilter, setDeviationFilter] = useState('all');
 
-  // Credenciales de las 4 Farmacias
-  const [credentials, setCredentials] = useState(() => {
-    try {
-      const stored = localStorage.getItem('pharma_credentials_v1');
-      return stored ? JSON.parse(stored) : DEFAULT_CREDENTIALS;
-    } catch {
-      return DEFAULT_CREDENTIALS;
-    }
-  });
-
   // Estado de las Conexiones
   const [connectionsStatus, setConnectionsStatus] = useState({
-    prov_1: { status: 'connected', label: 'API Cobeca Activa' },
-    prov_2: { status: 'connected', label: 'Portal Saas Activo' },
-    prov_3: { status: 'connected', label: 'Portal Locatel Activo' },
-    prov_4: { status: 'connected', label: 'Portal Farmatodo Activo' }
+    prov_1: { status: 'connected', label: 'Sesión Cobeca Activa' },
+    prov_2: { status: 'unconfigured', label: 'Droguería 1 — sin archivo' },
+    prov_3: { status: 'unconfigured', label: 'Droguería 2 — sin archivo' },
+    prov_4: { status: 'unconfigured', label: 'Droguería 3 — sin archivo' }
   });
 
   // Escenarios Guardados
@@ -190,7 +236,8 @@ export default function App() {
         const matchName = item.display_name.toLowerCase().includes(query);
         const matchSku = item.sku.toLowerCase().includes(query);
         const matchActive = item.active_ingredient?.toLowerCase().includes(query);
-        if (!matchName && !matchSku && !matchActive) return false;
+        const matchBarcode = item.barcode ? String(item.barcode).toLowerCase().includes(query) : false;
+        if (!matchName && !matchSku && !matchActive && !matchBarcode) return false;
       }
 
       if (selectedCategory !== 'all' && item.category !== selectedCategory) {
@@ -262,44 +309,78 @@ export default function App() {
     setSavedScenarios(newScenarios);
   };
 
-  // Manejo de Credenciales y Conexiones
-  const handleSaveCredentials = async (newCreds) => {
-    setCredentials(newCreds);
-    localStorage.setItem('pharma_credentials_v1', JSON.stringify(newCreds));
-    await savePharmacyCredentialsToFirestore(newCreds);
+  // Manejo de Conexiones via Backend
+  const handleTestConnection = async (pharmacyKey) => {
+    try {
+      const resp = await fetch(`${API_BASE}/api/connections/test/${pharmacyKey}`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${authSession.token}` },
+      });
+      const data = await resp.json();
+      setConnectionsStatus((prev) => ({
+        ...prev,
+        [pharmacyKey]: {
+          status: data.success ? 'connected' : 'error',
+          label: data.message || (data.success ? 'Conectado' : 'Error')
+        }
+      }));
+      return data;
+    } catch (err) {
+      return { success: false, message: 'No se pudo conectar al backend: ' + err.message };
+    }
   };
 
-  const handleTestConnection = async (pharmacyKey, creds) => {
-    await new Promise((res) => setTimeout(res, 800));
-
-    if (pharmacyKey === 'prov_1') {
-      if (!creds.apiUrl || !creds.apiKey) {
-        return { success: false, message: 'Falta configurar API_URL o Token JWT.' };
+  const handleFileUpload = async (provId, file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    try {
+      const resp = await fetch(`${API_BASE}/api/upload/${provId}`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${authSession.token}` },
+        body: formData,
+      });
+      const data = await resp.json();
+      if (data.success) {
+        setConnectionsStatus((prev) => ({
+          ...prev,
+          [provId]: { status: 'connected', label: `Archivo: ${data.filename} (${data.rows_detected} filas)` }
+        }));
+        // Recargar catálogo consolidado
+        await loadCatalog();
       }
-      return {
-        success: true,
-        message: `✓ Conexión establecida con Cobeca (Sede #${creds.drogueriaId || '7'}). Catálogo activo.`
-      };
-    } else {
-      const provName = DEFAULT_PROVIDERS.find((p) => p.id === pharmacyKey)?.shortName || 'Farmacia';
-      if (!creds.username) {
-        return { success: false, message: `Introduce un usuario válido para ${provName}.` };
-      }
-      return {
-        success: true,
-        message: `✓ Credenciales validadas para ${provName} (${creds.branch || 'Principal'}). Sesión B2B activa.`
-      };
+      return data;
+    } catch (err) {
+      return { success: false, message: 'Error al subir archivo: ' + err.message };
     }
   };
 
   const handleSyncCatalog = async () => {
-    await new Promise((res) => setTimeout(res, 1000));
-    setConnectionsStatus({
-      prov_1: { status: 'connected', label: 'Cobeca Sincronizada' },
-      prov_2: { status: 'connected', label: 'Saas Sincronizada' },
-      prov_3: { status: 'connected', label: 'Locatel Sincronizada' },
-      prov_4: { status: 'connected', label: 'Farmatodo Sincronizada' }
-    });
+    try {
+      // Lanzar sincronización completa en el backend
+      const syncResp = await fetch(`${API_BASE}/api/sync`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${authSession.token}` }
+      });
+      await syncResp.json();
+
+      // Recargar catálogo en vivo
+      await loadCatalog();
+
+      // Consultar estado actualizado desde el backend
+      const resp = await fetch(`${API_BASE}/api/connections/status`, {
+        headers: { 'Authorization': `Bearer ${authSession.token}` },
+      });
+      const data = await resp.json();
+      if (data.providers) {
+        const newStatus = {};
+        data.providers.forEach((p) => {
+          newStatus[p.provider_id] = { status: p.status, label: p.label };
+        });
+        setConnectionsStatus(newStatus);
+      }
+    } catch {
+      // Si el backend no responde, mantener status actual
+    }
   };
 
   const currentSectionTitle = {
@@ -308,7 +389,7 @@ export default function App() {
     providers: 'Análisis de Competitividad por Proveedor',
     ims: 'Auditoría Segmento IMS (Top 800 de Alta Rotación)',
     scenarios: 'Gestor de Escenarios & Simulaciones de Descuentos',
-    connections: 'Conexión de Farmacias & Credenciales (1 API + 3 Portales)'
+    connections: 'Conexiones — Cobeca API + Listas de Precios'
   }[activeSection] || 'Comparador de Farmacias';
 
   return (
@@ -337,8 +418,16 @@ export default function App() {
                 <span>•</span>
                 <span className="flex items-center gap-1 text-emerald-400 font-medium">
                   <CheckCircle2 className="w-3.5 h-3.5" />
-                  4 Farmacias Homologadas
+                  {products.length > 60
+                    ? `${products.length.toLocaleString()} Artículos en Vivo`
+                    : '4 Farmacias Homologadas'}
                 </span>
+                {isCatalogLoading && (
+                  <span className="flex items-center gap-1 text-blue-400 font-medium animate-pulse">
+                    <Loader2 className="w-3 h-3 animate-spin" />
+                    Cargando API...
+                  </span>
+                )}
               </div>
             </div>
           </div>
@@ -347,7 +436,7 @@ export default function App() {
           <div className="flex items-center gap-2.5">
             <div className="hidden sm:flex items-center gap-2 text-xs text-slate-300 bg-slate-800/80 px-3 py-1.5 rounded-xl border border-slate-700">
               <Building2 className="w-3.5 h-3.5 text-blue-400" />
-              <span>Sede Activa: <strong className="text-white">Droguería Cobeca (#7)</strong></span>
+              <span>{authSession.userName} <strong className="text-white">({authSession.drogueriaName} #{authSession.drogueriaId})</strong></span>
             </div>
 
             <button
@@ -366,6 +455,15 @@ export default function App() {
             >
               <Download className="w-3.5 h-3.5" />
               <span className="hidden md:inline">Reporte</span>
+            </button>
+
+            <button
+              onClick={onLogout}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 transition-all"
+              title="Cerrar sesión"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span className="hidden md:inline">Salir</span>
             </button>
           </div>
         </header>
@@ -470,13 +568,14 @@ export default function App() {
             />
           )}
 
-          {/* SECCIÓN 6: CONEXIÓN DE FARMACIAS & CREDENCIALES */}
+          {/* SECCIÓN 6: CONEXIONES */}
           {activeSection === 'connections' && (
             <PharmacyConnections
-              credentials={credentials}
-              onSaveCredentials={handleSaveCredentials}
+              connectionsStatus={connectionsStatus}
               onTestConnection={handleTestConnection}
+              onFileUpload={handleFileUpload}
               onSyncCatalog={handleSyncCatalog}
+              authSession={authSession}
             />
           )}
         </main>

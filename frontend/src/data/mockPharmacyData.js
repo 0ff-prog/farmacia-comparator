@@ -1,10 +1,10 @@
 /**
  * Catálogo Maestro Unificado de Productos Farmacéuticos
  * Incluye datos estructurados con las 4 farmacias / proveedores:
- * - prov_1: Droguería Cobeca
- * - prov_2: Farmacia Saas
- * - prov_3: Farmacia Locatel
- * - prov_4: Farmacia Farmatodo
+ * - prov_1: Cobeca (fuente principal — API REST)
+ * - prov_2: Droguería 1 (lista de precios por documento)
+ * - prov_3: Droguería 2 (lista de precios por documento)
+ * - prov_4: Droguería 3 (lista de precios por documento)
  * 
  * Contiene el flag `is_ims` para el segmento Top 800 de alta rotación,
  * con variación de precios realistas, faltantes de inventario y datos normalizados.
@@ -468,7 +468,7 @@ function generateExpandedCatalog() {
       suppliers: {
         prov_1: {
           supplier_id: 'prov_1',
-          supplier_name: 'Droguería Cobeca',
+          supplier_name: 'Cobeca',
           raw_name: item.display_name,
           base_price: item.prices.prov_1,
           in_stock: item.stocks.prov_1,
@@ -476,27 +476,27 @@ function generateExpandedCatalog() {
         },
         prov_2: {
           supplier_id: 'prov_2',
-          supplier_name: 'Farmacia Saas',
+          supplier_name: 'Droguería 1',
           raw_name: item.display_name,
           base_price: item.prices.prov_2,
           in_stock: item.stocks.prov_2,
-          product_url: 'https://farmaciasaas.com'
+          product_url: null
         },
         prov_3: {
           supplier_id: 'prov_3',
-          supplier_name: 'Farmacia Locatel',
+          supplier_name: 'Droguería 2',
           raw_name: item.display_name,
           base_price: item.prices.prov_3,
           in_stock: item.stocks.prov_3,
-          product_url: 'https://locatel.com.ve'
+          product_url: null
         },
         prov_4: {
           supplier_id: 'prov_4',
-          supplier_name: 'Farmacia Farmatodo',
+          supplier_name: 'Droguería 3',
           raw_name: item.display_name,
           base_price: item.prices.prov_4,
           in_stock: item.stocks.prov_4,
-          product_url: 'https://farmatodo.com.ve'
+          product_url: null
         }
       }
     };

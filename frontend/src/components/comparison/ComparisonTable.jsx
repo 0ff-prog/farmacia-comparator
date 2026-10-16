@@ -207,6 +207,12 @@ export default function ComparisonTable({
                       <span>{prod.category}</span>
                       <span>•</span>
                       <span className="italic text-slate-500">{prod.unit_of_measure}</span>
+                      {prod.barcode && (
+                        <>
+                          <span>•</span>
+                          <span className="font-mono text-slate-500" title="Código de Barra">{prod.barcode}</span>
+                        </>
+                      )}
                     </div>
                   </td>
 

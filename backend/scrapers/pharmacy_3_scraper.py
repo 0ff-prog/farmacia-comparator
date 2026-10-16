@@ -1,51 +1,84 @@
 """
-Conector / Scraper para Proveedor 3 (Farmacia Locatel).
-Permite extraer u homologar ofertas hacia el modelo estandarizado SupplierOffer.
+Drogueria 2 — Lector de lista de precios por documento (Excel / CSV).
+Reemplaza el scraper B2B anterior.
+Archivo esperado: backend/data/uploads/drogueria2_pricelist.xlsx  (o .csv)
 """
+import sys
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+sys.path.append(str(BASE_DIR))
+
 from typing import List, Dict, Any
 from backend.models.product_model import SupplierOffer
+from backend.scrapers.document_parser import parse_price_list
+
+SUPPLIER_ID   = "prov_3"
+SUPPLIER_NAME = "Drogueria 2"
+UPLOADS_DIR   = BASE_DIR / "backend" / "data" / "uploads"
+FILE_STEMS    = ["drogueria2_pricelist", "drogueria2", "pricelist_d2", "lista_d2"]
+
+
+def _find_file() -> Path | None:
+    for stem in FILE_STEMS:
+        for ext in [".xlsx", ".xls", ".csv"]:
+            candidate = UPLOADS_DIR / (stem + ext)
+            if candidate.exists():
+                return candidate
+    return None
+
 
 def get_pharmacy_3_offers() -> List[Dict[str, Any]]:
-    """
-    Retorna las ofertas disponibles de Farmacia Locatel.
-    """
-    sample_locatel_items = [
-        {"sku": "SKU-1001", "name": "Atorvastatina 20mg x 30 Tab", "price": 3.95, "stock": True},
-        {"sku": "SKU-1002", "name": "Losartán Potásico 50mg x 30 Tab", "price": 3.40, "stock": True},
-        {"sku": "SKU-1003", "name": "Amlodipina 10mg x 30 Tab", "price": 2.65, "stock": True},
-        {"sku": "SKU-1004", "name": "Carvedilol 25mg x 30 Tab", "price": 5.85, "stock": False},
-        {"sku": "SKU-1005", "name": "Enalapril Maleato 20mg x 30 Tab", "price": 2.50, "stock": True},
-        {"sku": "SKU-2001", "name": "Acetaminofén 500mg x 20 Tab", "price": 1.60, "stock": True},
-        {"sku": "SKU-2002", "name": "Ibuprofeno 400mg x 20 Cápsulas", "price": 2.50, "stock": True},
-        {"sku": "SKU-2003", "name": "Ketoprofeno 100mg x 20 Comprimidos", "price": 5.10, "stock": True},
-        {"sku": "SKU-2004", "name": "Diclofenac Sódico 50mg x 20 Grageas", "price": 1.95, "stock": True},
-        {"sku": "SKU-3001", "name": "Amoxicilina + Clavulánico 875/125mg x 14", "price": 10.80, "stock": True},
-        {"sku": "SKU-3002", "name": "Azitromicina 500mg x 3 Tab", "price": 4.90, "stock": True},
-        {"sku": "SKU-3003", "name": "Ciprofloxacina 500mg x 10 Tab", "price": 5.00, "stock": True},
-        {"sku": "SKU-4001", "name": "Omeprazol 20mg x 28 Cápsulas", "price": 2.95, "stock": True},
-        {"sku": "SKU-4002", "name": "Pantoprazol 40mg x 28 Comprimidos", "price": 7.10, "stock": True},
-        {"sku": "SKU-5001", "name": "Loratadina 10mg x 10 Tab", "price": 1.95, "stock": True},
-        {"sku": "SKU-5002", "name": "Cetirizina 10mg x 10 Tab", "price": 2.15, "stock": True},
-        {"sku": "SKU-6001", "name": "Metformina 850mg x 30 Tab", "price": 3.80, "stock": True},
-        {"sku": "SKU-7001", "name": "Sertralina 50mg x 30 Comprimidos", "price": 7.40, "stock": True},
-        {"sku": "SKU-8001", "name": "Betametasona Crema 0.05% x 30g", "price": 3.15, "stock": True},
-        {"sku": "SKU-9001", "name": "Vitamina C 1000mg x 10 Tab Efervescentes", "price": 3.60, "stock": True}
+    file_path = _find_file()
+    if file_path is None:
+        print(f"  [Drogueria 2] No se encontro archivo en uploads/. Usando datos demo.")
+        return _get_demo_offers()
+    print(f"  [Drogueria 2] Leyendo: {file_path.name}")
+    try:
+        items = parse_price_list(file_path)
+        print(f"  [Drogueria 2] {len(items)} productos parseados desde {file_path.name}")
+        return _map_to_offers(items)
+    except Exception as e:
+        print(f"  [Drogueria 2] Error al parsear {file_path.name}: {e}")
+        return _get_demo_offers()
+
+
+def _map_to_offers(items: List[Dict]) -> List[Dict[str, Any]]:
+    return [
+        {
+            "sku": item["sku"],
+            "barcode": item.get("barcode"),
+            "category": item.get("category", "General"),
+            "active_ingredient": item.get("ingredient"),
+            "offer": SupplierOffer(
+                supplier_id=SUPPLIER_ID, supplier_name=SUPPLIER_NAME,
+                raw_name=item["name"], base_price=item["price"],
+                in_stock=item.get("in_stock", True)
+            )
+        }
+        for item in items
     ]
 
-    offers = []
-    for item in sample_locatel_items:
-        offer = SupplierOffer(
-            supplier_id="prov_3",
-            supplier_name="Farmacia Locatel",
-            raw_name=item["name"],
-            base_price=item["price"],
-            in_stock=item["stock"],
-            product_url="https://locatel.com.ve"
-        )
-        offers.append({"sku": item["sku"], "offer": offer})
 
-    return offers
+def _get_demo_offers() -> List[Dict[str, Any]]:
+    demo = [
+        {"sku": "D2-001", "name": "Atorvastatina 20mg x30", "price": 3.95},
+        {"sku": "D2-002", "name": "Losartan 50mg x30",      "price": 3.40},
+        {"sku": "D2-003", "name": "Amoxicilina 500mg x12",  "price": 6.10},
+        {"sku": "D2-004", "name": "Omeprazol 20mg x28",     "price": 3.10},
+        {"sku": "D2-005", "name": "Metformina 850mg x30",   "price": 3.80},
+    ]
+    return [
+        {"sku": d["sku"], "offer": SupplierOffer(
+            supplier_id=SUPPLIER_ID, supplier_name=SUPPLIER_NAME,
+            raw_name=d["name"], base_price=d["price"], in_stock=True
+        )}
+        for d in demo
+    ]
+
 
 if __name__ == "__main__":
-    results = get_pharmacy_3_offers()
-    print(f"Farmacia Locatel: {len(results)} ofertas cargadas.")
+    offers = get_pharmacy_3_offers()
+    print(f"Total Drogueria 2: {len(offers)}")
+    for o in offers[:3]:
+        print(f"  SKU={o['sku']} | {o['offer'].raw_name} | ${o['offer'].base_price}")

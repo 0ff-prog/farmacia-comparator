@@ -9,10 +9,10 @@
  */
 
 export const DEFAULT_PROVIDERS = [
-  { id: 'prov_1', name: 'Droguería Cobeca', shortName: 'Cobeca', color: 'blue', badgeColor: 'bg-blue-500/10 text-blue-400 border-blue-500/20' },
-  { id: 'prov_2', name: 'Farmacia Saas', shortName: 'Saas', color: 'emerald', badgeColor: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' },
-  { id: 'prov_3', name: 'Farmacia Locatel', shortName: 'Locatel', color: 'violet', badgeColor: 'bg-purple-500/10 text-purple-400 border-purple-500/20' },
-  { id: 'prov_4', name: 'Farmacia Farmatodo', shortName: 'Farmatodo', color: 'amber', badgeColor: 'bg-amber-500/10 text-amber-400 border-amber-500/20' },
+  { id: 'prov_1', name: 'Cobeca', shortName: 'COBECA', color: 'blue', badgeColor: 'bg-blue-500/10 text-blue-400 border-blue-500/20' },
+  { id: 'prov_2', name: 'Droguería 1', shortName: 'DROG-1', color: 'emerald', badgeColor: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' },
+  { id: 'prov_3', name: 'Droguería 2', shortName: 'DROG-2', color: 'violet', badgeColor: 'bg-purple-500/10 text-purple-400 border-purple-500/20' },
+  { id: 'prov_4', name: 'Droguería 3', shortName: 'DROG-3', color: 'amber', badgeColor: 'bg-amber-500/10 text-amber-400 border-amber-500/20' },
 ];
 
 /**

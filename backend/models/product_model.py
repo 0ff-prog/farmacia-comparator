@@ -15,6 +15,7 @@ class ProductMaster(BaseModel):
     """Matriz Central de Productos (Catálogo Unificado)."""
     master_id: str = Field(..., description="Slug único normalizado (ej: paracetamol-500mg)")
     sku: str = Field(..., description="Código SKU de identificación comercial")
+    barcode: Optional[str] = Field(default=None, description="Código de barra GTIN/EAN")
     display_name: str = Field(..., description="Nombre limpio para la interfaz")
     category: str = Field(default="General", description="Categoría del medicamento")
     active_ingredient: Optional[str] = Field(default=None, description="Principio activo")
