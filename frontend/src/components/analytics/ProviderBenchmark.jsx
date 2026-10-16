@@ -4,9 +4,17 @@ import { formatCurrency } from '../../utils/analyticsMath';
 export default function ProviderBenchmark({
   benchmark,
   preferredProviderId,
-  adjustments
+  adjustments,
+  providers: providersProp
 }) {
-  const providers = benchmark.rankedList || [];
+  // Si hay nombres personalizados, los aplicamos sobre la lista del backend
+  const baseList = benchmark.rankedList || [];
+  const providers = providersProp
+    ? baseList.map((p) => {
+        const custom = providersProp.find((c) => c.id === p.id);
+        return custom ? { ...p, name: custom.name, shortName: custom.shortName } : p;
+      })
+    : baseList;
 
   return (
     <div className="bg-slate-800/90 rounded-2xl border border-slate-700/80 p-5 shadow-xl backdrop-blur-sm space-y-5">

@@ -6,8 +6,10 @@ export default function PriceAdjusterControls({
   onAdjustmentChange,
   preferredProviderId,
   onPreferredChange,
-  onResetAdjustments
+  onResetAdjustments,
+  providers: providersProp
 }) {
+  const PROVIDERS = providersProp || DEFAULT_PROVIDERS;
   const quickPresets = [-15, -10, -5, 0, 5, 10];
 
   return (
@@ -38,7 +40,7 @@ export default function PriceAdjusterControls({
 
       {/* Grid de los 4 Proveedores */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {DEFAULT_PROVIDERS.map((prov) => {
+        {PROVIDERS.map((prov) => {
           const currentAdj = adjustments[prov.id] ?? 0;
           const isPreferred = preferredProviderId === prov.id;
 

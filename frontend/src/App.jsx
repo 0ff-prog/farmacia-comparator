@@ -12,7 +12,9 @@ import { INITIAL_CATALOG } from './data/mockPharmacyData';
 import {
   evaluateProductRow,
   calculateProviderBenchmarks,
-  calculateIMSMetrics
+  calculateIMSMetrics,
+  getProviders,
+  updateDefaultProviders
 } from './utils/analyticsMath';
 import { exportComparisonToCSV, exportExecutiveSummary } from './utils/exportUtils';
 import {
@@ -97,8 +99,23 @@ export default function App() {
 }
 
 function MainApp({ authSession, onLogout }) {
-  // Navegación Activa
-  const [activeSection, setActiveSection] = useState('dashboard');
+  // Navegación Activa (persistida en localStorage para no perder la vista al recargar)
+  const [activeSection, setActiveSection] = useState(() => {
+    try {
+      return localStorage.getItem('pharma_active_section') || 'dashboard';
+    } catch {
+      return 'dashboard';
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('pharma_active_section', activeSection);
+    } catch {
+      // ignore
+    }
+  }, [activeSection]);
+
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   // Catálogo de Productos (Inicia con datos base y carga los 6,800+ de Cobeca en vivo)
@@ -116,6 +133,10 @@ function MainApp({ authSession, onLogout }) {
         const data = await resp.json();
         if (data.items && data.items.length > 0) {
           setProducts(data.items);
+        }
+        if (data.provider_names) {
+          setProviderLabels(data.provider_names);
+          updateDefaultProviders(data.provider_names);
         }
       }
     } catch (e) {
@@ -136,6 +157,10 @@ function MainApp({ authSession, onLogout }) {
       .then((data) => {
         if (isCurrent && data?.items?.length) {
           setProducts(data.items);
+        }
+        if (isCurrent && data?.provider_names) {
+          setProviderLabels(data.provider_names);
+          updateDefaultProviders(data.provider_names);
         }
       })
       .catch((err) => console.warn('Catálogo base cargado:', err));
@@ -160,6 +185,8 @@ function MainApp({ authSession, onLogout }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [imsOnly, setImsOnly] = useState(false);
+  const [onlyComparable, setOnlyComparable] = useState(false);
+  const [onlyFullBasket, setOnlyFullBasket] = useState(false);
   const [deviationFilter, setDeviationFilter] = useState('all');
 
   // Estado de las Conexiones
@@ -169,6 +196,77 @@ function MainApp({ authSession, onLogout }) {
     prov_3: { status: 'unconfigured', label: 'Droguería 2 — sin archivo' },
     prov_4: { status: 'unconfigured', label: 'Droguería 3 — sin archivo' }
   });
+
+  // Nombres Personalizados de Droguerías
+  const [providerLabels, setProviderLabels] = useState({});
+
+  // Función unificada para consultar el estado real de conexiones y nombres desde el backend
+  const refreshConnectionsStatus = useCallback(async () => {
+    if (!authSession?.token) return;
+    try {
+      const resp = await fetch(`${API_BASE}/api/connections/status`, {
+        headers: { Authorization: `Bearer ${authSession.token}` }
+      });
+      if (resp.ok) {
+        const data = await resp.json();
+        if (data.providers) {
+          const newStatus = {};
+          data.providers.forEach((p) => {
+            newStatus[p.provider_id] = { status: p.status, label: p.label };
+          });
+          setConnectionsStatus(newStatus);
+        }
+        if (data.provider_names) {
+          setProviderLabels(data.provider_names);
+          updateDefaultProviders(data.provider_names);
+        }
+      }
+    } catch (e) {
+      console.warn('Aviso cargando estado de conexiones:', e);
+    }
+  }, [authSession?.token]);
+
+  // Carga inicial automática de estado de conexiones y nombres en cada recarga
+  useEffect(() => {
+    if (authSession?.token) {
+      refreshConnectionsStatus();
+    }
+  }, [authSession?.token, refreshConnectionsStatus]);
+
+  /**
+   * Renombra una droguería: persiste en el backend y actualiza el estado local.
+   * @param {string} provId  - 'prov_2' | 'prov_3' | 'prov_4'
+   * @param {string} name    - Nombre nuevo ingresado por el usuario
+   */
+  const handleProviderRename = useCallback(async (provId, name) => {
+    try {
+      const resp = await fetch(`${API_BASE}/api/provider-names/${provId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ name })
+      });
+      if (resp.ok) {
+        const data = await resp.json();
+        const updated = {
+          [provId]: { name: data.name, short_name: data.short_name }
+        };
+        setProviderLabels((prev) => ({
+          ...prev,
+          ...updated
+        }));
+        updateDefaultProviders(updated);
+        // Recargar catálogo consolidado para reflejar nombres en benchmark
+        loadCatalog();
+      }
+    } catch (e) {
+      console.warn('Error al renombrar droguería:', e);
+    }
+  }, [loadCatalog]);
+
+  // Lista de proveedores activa con nombres personalizados aplicados
+  const activeProviders = getProviders(providerLabels);
 
   // Escenarios Guardados
   const [savedScenarios, setSavedScenarios] = useState(() => {
@@ -223,10 +321,20 @@ function MainApp({ authSession, onLogout }) {
     return Array.from(set).sort();
   }, [products]);
 
+  // Número de droguerías activas (con al menos 1 precio cotizado en el catálogo)
+  const activeProviderCount = useMemo(() => {
+    const providerIds = ['prov_1', 'prov_2', 'prov_3', 'prov_4'];
+    const active = providerIds.filter((pid) =>
+      products.some((p) => p.suppliers?.[pid]?.base_price > 0)
+    );
+    return Math.max(active.length, 1);
+  }, [products]);
+
   // Evaluación en Tiempo Real
   const evaluatedProducts = useMemo(() => {
-    return products.map((p) => evaluateProductRow(p, adjustments, preferredProviderId));
-  }, [products, adjustments, preferredProviderId]);
+    updateDefaultProviders(providerLabels);
+    return products.map((p) => evaluateProductRow(p, adjustments, preferredProviderId, activeProviderCount));
+  }, [products, adjustments, preferredProviderId, providerLabels, activeProviderCount]);
 
   // Filtrado de la Matriz
   const filteredProducts = useMemo(() => {
@@ -248,6 +356,16 @@ function MainApp({ authSession, onLogout }) {
         return false;
       }
 
+      if (onlyComparable) {
+        // Al menos una oferta válida en las otras droguerías competidoras (≥ 2 droguerías cotizando)
+        if (!item.isComparable) return false;
+      }
+
+      if (onlyFullBasket) {
+        // Disponible simultáneamente en todas las droguerías comparadas (Canasta Comparable)
+        if (!item.isFullBasket) return false;
+      }
+
       if (deviationFilter !== 'all') {
         const metrics = item.preferredMetrics;
         if (!metrics || !metrics.isAvailable) {
@@ -263,16 +381,18 @@ function MainApp({ authSession, onLogout }) {
 
       return true;
     });
-  }, [evaluatedProducts, searchTerm, selectedCategory, imsOnly, deviationFilter]);
+  }, [evaluatedProducts, searchTerm, selectedCategory, imsOnly, onlyComparable, onlyFullBasket, deviationFilter]);
 
   // Cálculos Analíticos Globales y de IMS
   const globalBenchmark = useMemo(() => {
+    updateDefaultProviders(providerLabels);
     return calculateProviderBenchmarks(products, adjustments, preferredProviderId);
-  }, [products, adjustments, preferredProviderId]);
+  }, [products, adjustments, preferredProviderId, providerLabels]);
 
   const imsMetrics = useMemo(() => {
+    updateDefaultProviders(providerLabels);
     return calculateIMSMetrics(products, adjustments, preferredProviderId);
-  }, [products, adjustments, preferredProviderId]);
+  }, [products, adjustments, preferredProviderId, providerLabels]);
 
   // Manejo de Escenarios
   const handleSaveScenario = async (scenario) => {
@@ -341,16 +461,29 @@ function MainApp({ authSession, onLogout }) {
       });
       const data = await resp.json();
       if (data.success) {
-        setConnectionsStatus((prev) => ({
-          ...prev,
-          [provId]: { status: 'connected', label: `Archivo: ${data.filename} (${data.rows_detected} filas)` }
-        }));
-        // Recargar catálogo consolidado
+        await refreshConnectionsStatus();
         await loadCatalog();
       }
       return data;
     } catch (err) {
       return { success: false, message: 'Error al subir archivo: ' + err.message };
+    }
+  };
+
+  const handleFileRemove = async (provId) => {
+    try {
+      const resp = await fetch(`${API_BASE}/api/upload/${provId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${authSession.token}` },
+      });
+      const data = await resp.json();
+      if (data.success) {
+        await refreshConnectionsStatus();
+        await loadCatalog();
+      }
+      return data;
+    } catch (err) {
+      return { success: false, message: 'Error al remover archivo: ' + err.message };
     }
   };
 
@@ -363,21 +496,9 @@ function MainApp({ authSession, onLogout }) {
       });
       await syncResp.json();
 
-      // Recargar catálogo en vivo
+      // Recargar catálogo en vivo y estado de conexiones
       await loadCatalog();
-
-      // Consultar estado actualizado desde el backend
-      const resp = await fetch(`${API_BASE}/api/connections/status`, {
-        headers: { 'Authorization': `Bearer ${authSession.token}` },
-      });
-      const data = await resp.json();
-      if (data.providers) {
-        const newStatus = {};
-        data.providers.forEach((p) => {
-          newStatus[p.provider_id] = { status: p.status, label: p.label };
-        });
-        setConnectionsStatus(newStatus);
-      }
+      await refreshConnectionsStatus();
     } catch {
       // Si el backend no responde, mantener status actual
     }
@@ -402,6 +523,7 @@ function MainApp({ authSession, onLogout }) {
         onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
         connectionsStatus={connectionsStatus}
         savedScenariosCount={savedScenarios.length}
+        providers={activeProviders}
       />
 
       {/* Área de Trabajo Principal con Scroll */}
@@ -479,6 +601,8 @@ function MainApp({ authSession, onLogout }) {
               onNavigate={setActiveSection}
               onExportCSV={() => exportComparisonToCSV(filteredProducts, preferredProviderId, adjustments)}
               onExportReport={() => exportExecutiveSummary(globalBenchmark, imsMetrics, adjustments, preferredProviderId)}
+              providers={activeProviders}
+              connectionsStatus={connectionsStatus}
             />
           )}
 
@@ -492,6 +616,7 @@ function MainApp({ authSession, onLogout }) {
                 preferredProviderId={preferredProviderId}
                 onPreferredChange={setPreferredProviderId}
                 onResetAdjustments={handleResetAdjustments}
+                providers={activeProviders}
               />
 
               {/* Barra de Filtros en Vivo */}
@@ -503,15 +628,24 @@ function MainApp({ authSession, onLogout }) {
                 categories={categories}
                 imsOnly={imsOnly}
                 onToggleIms={setImsOnly}
+                onlyComparable={onlyComparable}
+                onToggleComparable={setOnlyComparable}
+                onlyFullBasket={onlyFullBasket}
+                onToggleFullBasket={setOnlyFullBasket}
                 deviationFilter={deviationFilter}
                 onDeviationFilterChange={setDeviationFilter}
                 preferredProviderId={preferredProviderId}
                 totalCount={products.length}
                 filteredCount={filteredProducts.length}
+                comparableCount={globalBenchmark.comparableCount}
+                activeProviderCount={activeProviderCount}
+                providers={activeProviders}
                 onClearFilters={() => {
                   setSearchTerm('');
                   setSelectedCategory('all');
                   setImsOnly(false);
+                  setOnlyComparable(false);
+                  setOnlyFullBasket(false);
                   setDeviationFilter('all');
                 }}
               />
@@ -521,6 +655,7 @@ function MainApp({ authSession, onLogout }) {
                 products={filteredProducts}
                 preferredProviderId={preferredProviderId}
                 adjustments={adjustments}
+                providers={activeProviders}
               />
             </div>
           )}
@@ -534,12 +669,14 @@ function MainApp({ authSession, onLogout }) {
                 preferredProviderId={preferredProviderId}
                 onPreferredChange={setPreferredProviderId}
                 onResetAdjustments={handleResetAdjustments}
+                providers={activeProviders}
               />
 
               <ProviderBenchmark
                 benchmark={globalBenchmark}
                 preferredProviderId={preferredProviderId}
                 adjustments={adjustments}
+                providers={activeProviders}
               />
             </div>
           )}
@@ -574,8 +711,11 @@ function MainApp({ authSession, onLogout }) {
               connectionsStatus={connectionsStatus}
               onTestConnection={handleTestConnection}
               onFileUpload={handleFileUpload}
+              onFileRemove={handleFileRemove}
               onSyncCatalog={handleSyncCatalog}
               authSession={authSession}
+              providerLabels={providerLabels}
+              onProviderRename={handleProviderRename}
             />
           )}
         </main>

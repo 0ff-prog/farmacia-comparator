@@ -17,8 +17,10 @@ export default function Sidebar({
   isCollapsed,
   onToggleCollapse,
   connectionsStatus,
-  savedScenariosCount = 0
+  savedScenariosCount = 0,
+  providers: providersProp
 }) {
+  const PROVIDERS = providersProp || DEFAULT_PROVIDERS;
   const navItems = [
     {
       id: 'dashboard',
@@ -151,7 +153,7 @@ export default function Sidebar({
             </div>
 
             <div className="grid grid-cols-2 gap-1.5 text-[10px]">
-              {DEFAULT_PROVIDERS.map((prov) => {
+              {PROVIDERS.map((prov) => {
                 const status = connectionsStatus?.[prov.id] || { status: 'simulated', label: 'Simulado' };
                 const isConnected = status.status === 'connected';
 

@@ -20,19 +20,22 @@ FILE_STEMS    = ["drogueria3_pricelist", "drogueria3", "pricelist_d3", "lista_d3
 
 
 def _find_file() -> Path | None:
+    """Busca el archivo de precios de Drogueria 3 en la carpeta uploads (el más reciente)."""
+    candidates = []
     for stem in FILE_STEMS:
         for ext in [".xlsx", ".xls", ".csv"]:
-            candidate = UPLOADS_DIR / (stem + ext)
-            if candidate.exists():
-                return candidate
-    return None
+            c = UPLOADS_DIR / (stem + ext)
+            if c.exists():
+                candidates.append(c)
+    if not candidates:
+        return None
+    return max(candidates, key=lambda p: p.stat().st_mtime)
 
 
 def get_pharmacy_4_offers() -> List[Dict[str, Any]]:
     file_path = _find_file()
     if file_path is None:
-        print(f"  [Drogueria 3] No se encontro archivo en uploads/. Usando datos demo.")
-        return _get_demo_offers()
+        return []
     print(f"  [Drogueria 3] Leyendo: {file_path.name}")
     try:
         items = parse_price_list(file_path)
@@ -40,7 +43,7 @@ def get_pharmacy_4_offers() -> List[Dict[str, Any]]:
         return _map_to_offers(items)
     except Exception as e:
         print(f"  [Drogueria 3] Error al parsear {file_path.name}: {e}")
-        return _get_demo_offers()
+        return []
 
 
 def _map_to_offers(items: List[Dict]) -> List[Dict[str, Any]]:

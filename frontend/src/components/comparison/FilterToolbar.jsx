@@ -1,4 +1,4 @@
-import { Search, Filter, Sparkles, X, Layers } from 'lucide-react';
+import { Search, Filter, Sparkles, X, Layers, ArrowLeftRight, CheckCheck } from 'lucide-react';
 import { DEFAULT_PROVIDERS } from '../../utils/analyticsMath';
 
 export default function FilterToolbar({
@@ -9,15 +9,30 @@ export default function FilterToolbar({
   categories,
   imsOnly,
   onToggleIms,
+  onlyComparable,
+  onToggleComparable,
+  onlyFullBasket,
+  onToggleFullBasket,
   deviationFilter,
   onDeviationFilterChange,
   preferredProviderId,
   totalCount,
   filteredCount,
-  onClearFilters
+  comparableCount,
+  activeProviderCount,
+  onClearFilters,
+  providers: providersProp
 }) {
-  const prefProvider = DEFAULT_PROVIDERS.find((p) => p.id === preferredProviderId) || DEFAULT_PROVIDERS[0];
-  const hasActiveFilters = Boolean(searchTerm || selectedCategory !== 'all' || imsOnly || deviationFilter !== 'all');
+  const PROVIDERS = providersProp || DEFAULT_PROVIDERS;
+  const prefProvider = PROVIDERS.find((p) => p.id === preferredProviderId) || PROVIDERS[0];
+  const hasActiveFilters = Boolean(
+    searchTerm ||
+    selectedCategory !== 'all' ||
+    imsOnly ||
+    onlyComparable ||
+    onlyFullBasket ||
+    deviationFilter !== 'all'
+  );
 
   return (
     <div className="bg-slate-800/80 rounded-2xl border border-slate-700/80 p-4 shadow-md backdrop-blur-sm space-y-3">
@@ -42,11 +57,12 @@ export default function FilterToolbar({
           )}
         </div>
 
-        {/* Toggle Rápido IMS Top 800 */}
-        <div className="flex items-center gap-2">
+        {/* Toggles Rápidos: Top 800 IMS, Con Competencia y Canasta Comparable */}
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Toggle Rápido IMS Top 800 */}
           <button
             onClick={() => onToggleIms(!imsOnly)}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all duration-200 shadow-sm ${
+            className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold border transition-all duration-200 shadow-sm ${
               imsOnly
                 ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 ring-2 ring-amber-500/20'
                 : 'bg-slate-900/60 text-slate-400 border-slate-700 hover:text-slate-200 hover:border-slate-600'
@@ -56,6 +72,52 @@ export default function FilterToolbar({
             <span>Top 800 IMS</span>
             <span className={`px-1.5 py-0.2 rounded text-[10px] font-bold ${imsOnly ? 'bg-amber-500 text-slate-950' : 'bg-slate-800 text-slate-400'}`}>
               Alta Rotación
+            </span>
+          </button>
+
+          {/* Toggle Solo Similares / Con Competencia */}
+          <button
+            onClick={() => {
+              if (!onlyComparable && onlyFullBasket && onToggleFullBasket) {
+                onToggleFullBasket(false);
+              }
+              onToggleComparable(!onlyComparable);
+            }}
+            className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold border transition-all duration-200 shadow-sm ${
+              onlyComparable
+                ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40 ring-2 ring-cyan-500/20'
+                : 'bg-slate-900/60 text-slate-400 border-slate-700 hover:text-slate-200 hover:border-slate-600'
+            }`}
+            title="Muestra productos de Cobeca que tienen precio disponible en al menos otra droguería competidora"
+          >
+            <ArrowLeftRight className={`w-4 h-4 ${onlyComparable ? 'text-cyan-400' : 'text-slate-400'}`} />
+            <span>Con Competencia</span>
+            <span className={`px-1.5 py-0.2 rounded text-[10px] font-bold ${onlyComparable ? 'bg-cyan-500 text-slate-950' : 'bg-slate-800 text-slate-400'}`}>
+              &ge; 2 Droguerías
+            </span>
+          </button>
+
+          {/* Toggle Canasta Comparable (Disponible en Todas las Droguerías Activas) */}
+          <button
+            onClick={() => {
+              if (!onlyFullBasket && onlyComparable) {
+                onToggleComparable(false);
+              }
+              if (onToggleFullBasket) {
+                onToggleFullBasket(!onlyFullBasket);
+              }
+            }}
+            className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold border transition-all duration-200 shadow-sm ${
+              onlyFullBasket
+                ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 ring-2 ring-emerald-500/20'
+                : 'bg-slate-900/60 text-slate-400 border-slate-700 hover:text-slate-200 hover:border-slate-600'
+            }`}
+            title={`Muestra exclusivamente los productos disponibles y cotizados simultáneamente en las ${activeProviderCount ?? 'todas las'} droguerías activas (la Canasta Comparable del Dashboard)`}
+          >
+            <CheckCheck className={`w-4 h-4 ${onlyFullBasket ? 'text-emerald-400' : 'text-slate-400'}`} />
+            <span>Canasta Comparable</span>
+            <span className={`px-1.5 py-0.2 rounded text-[10px] font-bold ${onlyFullBasket ? 'bg-emerald-500 text-slate-950' : 'bg-slate-800 text-slate-400'}`}>
+              En {activeProviderCount ?? 'Todas'} Activas {comparableCount ? `(${comparableCount})` : ''}
             </span>
           </button>
         </div>

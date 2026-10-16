@@ -16,6 +16,32 @@ export const DEFAULT_PROVIDERS = [
 ];
 
 /**
+ * Actualiza en el lugar los nombres y shortNames de DEFAULT_PROVIDERS.
+ * Permite que cualquier componente que importe DEFAULT_PROVIDERS vea los nombres actualizados.
+ */
+export function updateDefaultProviders(customLabels = {}) {
+  DEFAULT_PROVIDERS.forEach((p) => {
+    const custom = customLabels[p.id];
+    if (custom) {
+      if (custom.name) p.name = custom.name;
+      if (custom.short_name || custom.shortName) {
+        p.shortName = (custom.short_name || custom.shortName).toUpperCase();
+      }
+    }
+  });
+}
+
+/**
+ * Devuelve una copia de DEFAULT_PROVIDERS con los nombres personalizados aplicados.
+ * @param {Object} customLabels - Mapa { prov_id: { name, short_name } } cargado desde la API.
+ * @returns {Array} Providers con nombres actualizados.
+ */
+export function getProviders(customLabels = {}) {
+  updateDefaultProviders(customLabels);
+  return DEFAULT_PROVIDERS.map((p) => ({ ...p }));
+}
+
+/**
  * Calcula el precio ajustado según el porcentaje dinámico.
  */
 export function calculateAdjustedPrice(basePrice, adjustmentPercent = 0) {
@@ -29,8 +55,10 @@ export function calculateAdjustedPrice(basePrice, adjustmentPercent = 0) {
 
 /**
  * Evalúa una fila/producto comparando las 4 farmacias.
+ * @param {number} activeProviderCount - Cantidad de droguerías activas (con al menos un precio).
+ *   Si se omite, se usa DEFAULT_PROVIDERS.length (4) como fallback conservador.
  */
-export function evaluateProductRow(product, adjustments = {}, preferredProviderId = 'prov_1') {
+export function evaluateProductRow(product, adjustments = {}, preferredProviderId = 'prov_1', activeProviderCount = DEFAULT_PROVIDERS.length) {
   const providerEvaluations = {};
   const validPrices = [];
 
@@ -157,6 +185,10 @@ export function evaluateProductRow(product, adjustments = {}, preferredProviderI
     };
   }
 
+  const quotedCount = validPrices.length;
+  const isComparable = quotedCount >= 2;
+  const isFullBasket = quotedCount >= activeProviderCount;
+
   return {
     ...product,
     evaluations: providerEvaluations,
@@ -164,6 +196,9 @@ export function evaluateProductRow(product, adjustments = {}, preferredProviderI
     maxPrice,
     winnerProviderId: winner ? winner.providerId : null,
     preferredMetrics,
+    quotedCount,
+    isComparable,
+    isFullBasket,
   };
 }
 
@@ -198,9 +233,15 @@ export function calculateProviderBenchmarks(products, adjustments = {}, preferre
     };
   });
 
-  // Identificar SKUs comunes (comparables) cotizados por todos con stock
+  // Identificar droguerías activas con ofertas
+  const activeProviders = DEFAULT_PROVIDERS.filter((prov) => {
+    return evaluatedProducts.some((p) => p.evaluations[prov.id]?.adjustedPrice !== null);
+  });
+  const targetProviders = activeProviders.length > 1 ? activeProviders : DEFAULT_PROVIDERS;
+
+  // Identificar SKUs comunes (comparables) cotizados por todos los proveedores activos
   const allAvailableSkus = evaluatedProducts.filter((p) => {
-    return DEFAULT_PROVIDERS.every((prov) => p.evaluations[prov.id]?.adjustedPrice !== null);
+    return targetProviders.every((prov) => p.evaluations[prov.id]?.adjustedPrice !== null && p.evaluations[prov.id]?.adjustedPrice > 0);
   });
 
   let optimalBasketTotal = 0;

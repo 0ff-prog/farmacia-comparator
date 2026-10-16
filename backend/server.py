@@ -92,13 +92,55 @@ def _verify_app_token(creds: HTTPAuthorizationCredentials = Depends(bearer_schem
         raise HTTPException(status_code=401, detail="Token expirado o invalido. Inicia sesion nuevamente.")
 
 
+def _get_session_cache_path() -> Path:
+    return BASE_DIR / "backend" / "data" / ".session_cache.json"
+
+def _save_session_cache(sub: str, data: dict):
+    try:
+        p = _get_session_cache_path()
+        p.parent.mkdir(parents=True, exist_ok=True)
+        cache = {}
+        if p.exists():
+            try:
+                with open(p, "r", encoding="utf-8") as f:
+                    cache = json.load(f)
+            except Exception:
+                cache = {}
+        # Convert datetime to isoformat for json serialization
+        ser_data = {**data}
+        if isinstance(ser_data.get("expires_at"), datetime):
+            ser_data["expires_at"] = ser_data["expires_at"].isoformat()
+        cache[sub] = ser_data
+        with open(p, "w", encoding="utf-8") as f:
+            json.dump(cache, f)
+    except Exception as e:
+        print(f"Aviso guardando cache de sesion: {e}")
+
 def _get_cobeca_jwt(sub: str) -> Optional[str]:
-    """Devuelve el JWT de Cobeca guardado para este usuario de app."""
+    """Devuelve el JWT de Cobeca guardado para este usuario de app (memoria o disco)."""
     session = _cobeca_sessions.get(sub)
     if not session:
+        # Intentar cargar desde archivo persistente
+        p = _get_session_cache_path()
+        if p.exists():
+            try:
+                with open(p, "r", encoding="utf-8") as f:
+                    cache = json.load(f)
+                cached_sess = cache.get(sub)
+                if cached_sess:
+                    exp = datetime.fromisoformat(cached_sess["expires_at"])
+                    if datetime.now(timezone.utc) <= exp:
+                        _cobeca_sessions[sub] = cached_sess
+                        session = cached_sess
+            except Exception:
+                pass
+    if not session:
         return None
-    # Verificar si el JWT de Cobeca ha expirado (tipicamente 24h)
-    if datetime.now(timezone.utc) > session.get("expires_at", datetime.min.replace(tzinfo=timezone.utc)):
+    # Verificar expiracion
+    exp = session.get("expires_at")
+    if isinstance(exp, str):
+        exp = datetime.fromisoformat(exp)
+    if exp and datetime.now(timezone.utc) > exp:
         return None
     return session.get("cobeca_jwt")
 
@@ -173,15 +215,16 @@ def login(body: CobecaLoginRequest, background_tasks: BackgroundTasks):
         drog_id   = COBECA_DROGUERIA
         drog_name = "Cobeca"
 
-    # Guardamos el JWT de Cobeca en memoria (expira en 24h aprox segun su exp)
     sub = f"{usuario}@cobeca"
-    _cobeca_sessions[sub] = {
+    session_data = {
         "cobeca_jwt":  cobeca_jwt,
         "drogueria_id": drog_id,
         "drogueria_name": drog_name,
         "desc_usuario": desc,
         "expires_at":  datetime.now(timezone.utc) + timedelta(hours=23),
     }
+    _cobeca_sessions[sub] = session_data
+    _save_session_cache(sub, session_data)
 
     # Lanzar sincronización del catálogo real en segundo plano
     def _bg_sync():
@@ -255,16 +298,25 @@ def connections_status(current: dict = Depends(_verify_app_token)):
                     return "connected", f"Archivo cargado: {p.name}"
         return "unconfigured", f"{name}: ningun archivo cargado aun"
 
-    d1s, d1l = doc_status(["drogueria1_pricelist","drogueria1","lista_d1"], "Drogueria 1")
-    d2s, d2l = doc_status(["drogueria2_pricelist","drogueria2","lista_d2"], "Drogueria 2")
-    d3s, d3l = doc_status(["drogueria3_pricelist","drogueria3","lista_d3"], "Drogueria 3")
+    # Cargar nombres personalizados de droguerías
+    prov_names = _load_provider_names()
+    n1 = prov_names.get("prov_2", {}).get("name", "Drogueria 1")
+    n2 = prov_names.get("prov_3", {}).get("name", "Drogueria 2")
+    n3 = prov_names.get("prov_4", {}).get("name", "Drogueria 3")
 
-    return {"providers": [
-        {"provider_id":"prov_1","provider_name":"Cobeca",      "status":cobeca_status,"label":cobeca_label},
-        {"provider_id":"prov_2","provider_name":"Drogueria 1", "status":d1s,"label":d1l},
-        {"provider_id":"prov_3","provider_name":"Drogueria 2", "status":d2s,"label":d2l},
-        {"provider_id":"prov_4","provider_name":"Drogueria 3", "status":d3s,"label":d3l},
-    ]}
+    d1s, d1l = doc_status(["drogueria1_pricelist","drogueria1","lista_d1"], n1)
+    d2s, d2l = doc_status(["drogueria2_pricelist","drogueria2","lista_d2"], n2)
+    d3s, d3l = doc_status(["drogueria3_pricelist","drogueria3","lista_d3"], n3)
+
+    return {
+        "providers": [
+            {"provider_id":"prov_1","provider_name":"Cobeca", "status":cobeca_status,"label":cobeca_label},
+            {"provider_id":"prov_2","provider_name":n1,       "status":d1s,"label":d1l},
+            {"provider_id":"prov_3","provider_name":n2,       "status":d2s,"label":d2l},
+            {"provider_id":"prov_4","provider_name":n3,       "status":d3s,"label":d3l},
+        ],
+        "provider_names": prov_names
+    }
 
 
 @app.post("/api/connections/test/prov_1")
@@ -319,6 +371,15 @@ async def upload_pricelist(
     dest_name = f"{stem}_pricelist{ext}"
     dest_path = UPLOADS_DIR / dest_name
 
+    # Eliminar versiones previas con otra extensión para evitar conflictos
+    for old_ext in (".xlsx", ".xls", ".csv"):
+        old_file = UPLOADS_DIR / f"{stem}_pricelist{old_ext}"
+        if old_file.exists() and old_file != dest_path:
+            try:
+                old_file.unlink()
+            except Exception:
+                pass
+
     contents = await file.read()
     with open(dest_path, "wb") as f:
         f.write(contents)
@@ -328,35 +389,100 @@ async def upload_pricelist(
     cobeca_jwt = _get_cobeca_jwt(sub)
     session = _cobeca_sessions.get(sub, {})
     drog_id = session.get("drogueria_id", COBECA_DROGUERIA)
-
-    def _sync():
-        try:
-            from backend.main import run_pipeline
-            run_pipeline(token=cobeca_jwt, drogueria_id=drog_id)
-        except Exception as e:
-            print(f"Error consolidando tras subida: {e}")
-
-    background_tasks.add_task(_sync)
-
     # Parsear para contar filas y preview
     try:
         from backend.scrapers.document_parser import parse_price_list
         items = parse_price_list(dest_path)
         preview = items[:5]
-        return {
-            "success":       True,
-            "filename":      dest_name,
-            "rows_detected": len(items),
-            "preview":       preview,
-        }
     except Exception as e:
-        return {
-            "success":  True,
-            "filename": dest_name,
-            "rows_detected": 0,
-            "preview":  [],
-            "parse_warning": str(e)
-        }
+        items = []
+        preview = []
+        print(f"Error parseando archivo subido: {e}")
+
+    # Sincronizar catálogo consolidado inmediatamente para que la matriz lo refleje al instante
+    total_skus = len(items)
+    try:
+        from backend.main import run_pipeline
+        pipeline_res = run_pipeline(token=cobeca_jwt, drogueria_id=drog_id)
+        _catalog_cache["mtime"] = 0.0
+        _catalog_cache["data"] = None
+        if isinstance(pipeline_res, dict):
+            total_skus = pipeline_res.get("total_skus", total_skus)
+    except Exception as e:
+        print(f"Aviso al consolidar inmediatamente tras subida: {e}")
+        # Si hubo demora o error, lanzar reintento en background
+        def _bg_retry():
+            try:
+                from backend.main import run_pipeline
+                run_pipeline(token=cobeca_jwt, drogueria_id=drog_id)
+            except Exception:
+                pass
+        background_tasks.add_task(_bg_retry)
+
+    return {
+        "success":       True,
+        "filename":      dest_name,
+        "rows_detected": len(items),
+        "total_skus":    total_skus,
+        "preview":       preview,
+    }
+
+
+@app.delete("/api/upload/{prov_id}")
+async def remove_pricelist(
+    prov_id: str,
+    background_tasks: BackgroundTasks,
+    current: dict = Depends(_verify_app_token)
+):
+    """
+    Elimina la lista de precios de Drogueria 1, 2 o 3.
+    Re-consolida automáticamente el catálogo sin ese proveedor.
+    """
+    name_map = {"prov_2": "drogueria1", "prov_3": "drogueria2", "prov_4": "drogueria3"}
+    if prov_id not in name_map:
+        raise HTTPException(status_code=400, detail=f"prov_id invalido: {prov_id}. Use prov_2, prov_3 o prov_4.")
+
+    stem = name_map[prov_id]
+    deleted_any = False
+    for ext in [".xlsx", ".xls", ".csv"]:
+        candidate = UPLOADS_DIR / f"{stem}_pricelist{ext}"
+        if candidate.exists():
+            try:
+                candidate.unlink()
+                deleted_any = True
+            except Exception as e:
+                print(f"Error borrando archivo {candidate.name}: {e}")
+
+    # Re-consolidar catálogo inmediatamente sin los datos de este proveedor
+    sub = current.get("sub", "")
+    cobeca_jwt = _get_cobeca_jwt(sub)
+    session = _cobeca_sessions.get(sub, {})
+    drog_id = session.get("drogueria_id", COBECA_DROGUERIA)
+
+    total_skus = 0
+    try:
+        from backend.main import run_pipeline
+        pipeline_res = run_pipeline(token=cobeca_jwt, drogueria_id=drog_id)
+        _catalog_cache["mtime"] = 0.0
+        _catalog_cache["data"] = None
+        if isinstance(pipeline_res, dict):
+            total_skus = pipeline_res.get("total_skus", 0)
+    except Exception as e:
+        print(f"Aviso al consolidar tras remover archivo: {e}")
+        def _bg_retry():
+            try:
+                from backend.main import run_pipeline
+                run_pipeline(token=cobeca_jwt, drogueria_id=drog_id)
+            except Exception:
+                pass
+        background_tasks.add_task(_bg_retry)
+
+    return {
+        "success": True,
+        "message": f"Lista de precios de {stem} removida correctamente.",
+        "deleted": deleted_any,
+        "total_skus": total_skus,
+    }
 
 
 _catalog_cache: dict = {"mtime": 0.0, "data": None}
@@ -415,7 +541,8 @@ def get_catalog(
                     "total": total,
                     "page": 1,
                     "total_pages": 1,
-                    "source": fname
+                    "source": fname,
+                    "provider_names": _load_provider_names()
                 }
 
             start = (page - 1) * page_size
@@ -440,6 +567,8 @@ def sync_data(current: dict = Depends(_verify_app_token)):
     try:
         from backend.main import run_pipeline
         result = run_pipeline(token=cobeca_jwt, drogueria_id=drog_id)
+        _catalog_cache["mtime"] = 0.0
+        _catalog_cache["data"] = None
         return {
             "success": True,
             "message": f"Sincronización completada. {result.get('total_skus', 0)} SKUs procesados.",
@@ -449,6 +578,95 @@ def sync_data(current: dict = Depends(_verify_app_token)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error durante la sincronización: {str(e)}")
 
+
+
+# ── Nombres Personalizados de Proveedores ──────────────────────────────────────
+PROVIDER_NAMES_FILE = BASE_DIR / "backend" / "data" / "provider_names.json"
+
+_DEFAULT_PROV_NAMES = {
+    "prov_1": {"name": "Cobeca", "short_name": "Cobeca"},
+    "prov_2": {"name": "Droguería 1", "short_name": "DROG-1"},
+    "prov_3": {"name": "Droguería 2", "short_name": "DROG-2"},
+    "prov_4": {"name": "Droguería 3", "short_name": "DROG-3"},
+}
+
+def _load_provider_names() -> dict:
+    """Lee provider_names.json y devuelve un dict con los nombres de cada proveedor."""
+    result = {k: dict(v) for k, v in _DEFAULT_PROV_NAMES.items()}
+    if PROVIDER_NAMES_FILE.exists():
+        try:
+            with open(PROVIDER_NAMES_FILE, "r", encoding="utf-8") as f:
+                saved = json.load(f)
+            for prov_id, vals in saved.items():
+                if prov_id in result:
+                    result[prov_id]["name"] = vals.get("name", result[prov_id]["name"])
+                    result[prov_id]["short_name"] = vals.get("short_name", result[prov_id]["short_name"])
+        except Exception:
+            pass
+    return result
+
+
+@app.get("/api/provider-names")
+def get_provider_names():
+    """Devuelve los nombres personalizados de las droguerías."""
+    return _load_provider_names()
+
+
+class ProviderNameUpdate(BaseModel):
+    name: str
+    short_name: Optional[str] = None
+
+
+@app.put("/api/provider-names/{prov_id}")
+def update_provider_name(
+    prov_id: str,
+    body: ProviderNameUpdate
+):
+    """Actualiza el nombre personalizado de una droguería (prov_2, prov_3 o prov_4)."""
+    if prov_id not in ("prov_2", "prov_3", "prov_4"):
+        raise HTTPException(status_code=400, detail="Solo se puede renombrar prov_2, prov_3 o prov_4.")
+
+    saved = {}
+    if PROVIDER_NAMES_FILE.exists():
+        try:
+            with open(PROVIDER_NAMES_FILE, "r", encoding="utf-8") as f:
+                saved = json.load(f)
+        except Exception:
+            saved = {}
+
+    clean_name = body.name.strip()
+    if not body.short_name:
+        words = clean_name.split()
+        if len(words) > 1 and words[0].lower() in ("drogueria", "droguería", "farmacia", "droguera"):
+            short = words[1].upper()[:10]
+        else:
+            short = clean_name.upper()[:10]
+    else:
+        short = body.short_name.upper()[:10]
+    saved[prov_id] = {"name": clean_name, "short_name": short}
+
+    PROVIDER_NAMES_FILE.parent.mkdir(parents=True, exist_ok=True)
+    with open(PROVIDER_NAMES_FILE, "w", encoding="utf-8") as f:
+        json.dump(saved, f, ensure_ascii=False, indent=2)
+
+    # Actualizar catálogo consolidado en memoria y disco si existe
+    try:
+        cons_path = BASE_DIR / "backend" / "data" / "consolidated_catalog.json"
+        if cons_path.exists():
+            with open(cons_path, "r", encoding="utf-8") as f:
+                cdata = json.load(f)
+            bmarks = cdata.get("provider_benchmarks", {})
+            if prov_id in bmarks:
+                bmarks[prov_id]["name"] = clean_name
+                bmarks[prov_id]["short_name"] = short
+            with open(cons_path, "w", encoding="utf-8") as f:
+                json.dump(cdata, f, ensure_ascii=False)
+            _catalog_cache["data"] = cdata
+            _catalog_cache["mtime"] = cons_path.stat().st_mtime
+    except Exception as e:
+        print(f"Aviso actualizando nombre en catalogo: {e}")
+
+    return {"success": True, "prov_id": prov_id, "name": clean_name, "short_name": short}
 
 
 if __name__ == "__main__":

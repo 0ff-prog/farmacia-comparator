@@ -8,28 +8,42 @@ import {
   FileSpreadsheet,
   Loader2,
   ShieldCheck,
-  Zap
+  Zap,
+  Trash2,
+  Pencil,
+  X,
+  Check
 } from 'lucide-react';
 
-const PROVIDERS = [
-  { id: 'prov_2', name: 'Drogueria 1', type: 'document' },
-  { id: 'prov_3', name: 'Drogueria 2', type: 'document' },
-  { id: 'prov_4', name: 'Drogueria 3', type: 'document' },
+const BASE_PROVIDERS = [
+  { id: 'prov_2', defaultName: 'Droguería 1', type: 'document' },
+  { id: 'prov_3', defaultName: 'Droguería 2', type: 'document' },
+  { id: 'prov_4', defaultName: 'Droguería 3', type: 'document' },
 ];
 
 export default function PharmacyConnections({
   connectionsStatus,
   onTestConnection,
   onFileUpload,
+  onFileRemove,
   onSyncCatalog,
-  authSession
+  authSession,
+  providerLabels = {},
+  onProviderRename
 }) {
   const [testResults, setTestResults] = useState({});
   const [isTesting, setIsTesting] = useState({});
   const [uploadResults, setUploadResults] = useState({});
   const [isUploading, setIsUploading] = useState({});
+  const [isRemoving, setIsRemoving] = useState({});
   const [isSyncing, setIsSyncing] = useState(false);
   const fileInputRefs = useRef({});
+
+  // ── Modal de nombre tras subida de archivo ────────────────────────────────
+  // null | { provId, currentName }
+  const [namePrompt, setNamePrompt] = useState(null);
+  const [nameInput, setNameInput] = useState('');
+  const [isSavingName, setIsSavingName] = useState(false);
 
   const runTest = async (provId) => {
     setIsTesting((prev) => ({ ...prev, [provId]: true }));
@@ -52,6 +66,12 @@ export default function PharmacyConnections({
     try {
       const result = await onFileUpload(provId, file);
       setUploadResults((prev) => ({ ...prev, [provId]: result }));
+      if (result?.success) {
+        // Abrir modal para pedir nombre de la droguería
+        const currentName = providerLabels[provId]?.name || BASE_PROVIDERS.find((p) => p.id === provId)?.defaultName || '';
+        setNameInput(currentName);
+        setNamePrompt({ provId, currentName });
+      }
     } catch {
       setUploadResults((prev) => ({
         ...prev,
@@ -59,6 +79,47 @@ export default function PharmacyConnections({
       }));
     } finally {
       setIsUploading((prev) => ({ ...prev, [provId]: false }));
+    }
+  };
+
+  const handleNameSubmit = async () => {
+    if (!namePrompt || !nameInput.trim()) return;
+    setIsSavingName(true);
+    try {
+      if (onProviderRename) {
+        await onProviderRename(namePrompt.provId, nameInput.trim());
+      }
+    } finally {
+      setIsSavingName(false);
+      setNamePrompt(null);
+      setNameInput('');
+    }
+  };
+
+  const handleNameSkip = () => {
+    setNamePrompt(null);
+    setNameInput('');
+  };
+
+  const handleRemove = async (provId) => {
+    if (!onFileRemove) return;
+    setIsRemoving((prev) => ({ ...prev, [provId]: true }));
+    try {
+      const result = await onFileRemove(provId);
+      if (result && result.success) {
+        setUploadResults((prev) => {
+          const next = { ...prev };
+          delete next[provId];
+          return next;
+        });
+        if (fileInputRefs.current[provId]) {
+          fileInputRefs.current[provId].value = '';
+        }
+      }
+    } catch {
+      // Error handled in parent
+    } finally {
+      setIsRemoving((prev) => ({ ...prev, [provId]: false }));
     }
   };
 
@@ -83,8 +144,70 @@ export default function PharmacyConnections({
     return 'bg-slate-500';
   };
 
+  /** Devuelve el nombre personalizado de un proveedor o el nombre por defecto. */
+  const provName = (provId) =>
+    providerLabels[provId]?.name ||
+    BASE_PROVIDERS.find((p) => p.id === provId)?.defaultName ||
+    provId;
+
   return (
     <div className="space-y-6">
+      {/* ── Modal de nombre de droguería ─────────────────────────────────── */}
+      {namePrompt && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl p-6 w-full max-w-sm mx-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-base font-bold text-white flex items-center gap-2">
+                <Pencil className="w-4 h-4 text-blue-400" />
+                Nombre de la Droguería
+              </h3>
+              <button
+                onClick={handleNameSkip}
+                className="text-slate-400 hover:text-white transition-colors"
+                title="Omitir"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <p className="text-xs text-slate-400 mb-4">
+              Ingresa un nombre personalizado para identificar esta droguería en toda la plataforma.
+            </p>
+            <input
+              autoFocus
+              type="text"
+              value={nameInput}
+              onChange={(e) => setNameInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleNameSubmit();
+                if (e.key === 'Escape') handleNameSkip();
+              }}
+              placeholder="Ej: Farmaunión, Farmatodo, etc."
+              className="w-full bg-slate-800 border border-slate-600 rounded-xl px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 mb-4"
+            />
+            <div className="flex gap-2 justify-end">
+              <button
+                onClick={handleNameSkip}
+                className="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-600 transition-all"
+              >
+                Omitir
+              </button>
+              <button
+                onClick={handleNameSubmit}
+                disabled={!nameInput.trim() || isSavingName}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white transition-all"
+              >
+                {isSavingName ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <Check className="w-3.5 h-3.5" />
+                )}
+                Guardar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -146,9 +269,10 @@ export default function PharmacyConnections({
       </div>
 
       {/* Document Upload Cards */}
-      {PROVIDERS.map((prov) => {
+      {BASE_PROVIDERS.map((prov) => {
         const status = connectionsStatus?.[prov.id] || {};
         const uploadResult = uploadResults[prov.id];
+        const displayName = provName(prov.id);
 
         return (
           <div key={prov.id} className="bg-slate-800/60 rounded-2xl border border-slate-700/50 p-5">
@@ -158,7 +282,22 @@ export default function PharmacyConnections({
                   <FileSpreadsheet className="w-5 h-5 text-slate-300" />
                 </div>
                 <div>
-                  <h4 className="text-sm font-bold text-white">{prov.name} — Lista de Precios</h4>
+                  <div className="flex items-center gap-2">
+                    <h4 className="text-sm font-bold text-white">{displayName} — Lista de Precios</h4>
+                    {/* Botón inline para renombrar */}
+                    {onProviderRename && (
+                      <button
+                        onClick={() => {
+                          setNameInput(displayName);
+                          setNamePrompt({ provId: prov.id, currentName: displayName });
+                        }}
+                        className="text-slate-500 hover:text-slate-300 transition-colors"
+                        title="Renombrar droguería"
+                      >
+                        <Pencil className="w-3 h-3" />
+                      </button>
+                    )}
+                  </div>
                   <p className="text-xs text-slate-400 mt-0.5">
                     Sube un archivo Excel (.xlsx) o CSV con la lista de precios
                   </p>
@@ -176,7 +315,7 @@ export default function PharmacyConnections({
             </p>
 
             {/* Upload zone */}
-            <div className="mt-3 flex items-center gap-3">
+            <div className="mt-3 flex items-center flex-wrap gap-3">
               <input
                 ref={(el) => { fileInputRefs.current[prov.id] = el; }}
                 type="file"
@@ -186,16 +325,34 @@ export default function PharmacyConnections({
               />
               <button
                 onClick={() => fileInputRefs.current[prov.id]?.click()}
-                disabled={isUploading[prov.id]}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-slate-700 hover:bg-slate-600 text-white border border-slate-600 transition-all"
+                disabled={isUploading[prov.id] || isRemoving[prov.id]}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-slate-700 hover:bg-slate-600 text-white border border-slate-600 transition-all disabled:opacity-50"
               >
                 {isUploading[prov.id] ? (
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
                 ) : (
                   <Upload className="w-3.5 h-3.5" />
                 )}
-                {isUploading[prov.id] ? 'Subiendo...' : 'Subir Archivo'}
+                {isUploading[prov.id]
+                  ? 'Subiendo...'
+                  : (status.status === 'connected' ? 'Reemplazar Archivo' : 'Subir Archivo')}
               </button>
+
+              {status.status === 'connected' && (
+                <button
+                  onClick={() => handleRemove(prov.id)}
+                  disabled={isRemoving[prov.id] || isUploading[prov.id]}
+                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-red-500/10 hover:bg-red-500/20 text-red-300 border border-red-500/30 transition-all disabled:opacity-50"
+                  title="Eliminar archivo y desvincular precios"
+                >
+                  {isRemoving[prov.id] ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <Trash2 className="w-3.5 h-3.5 text-red-400" />
+                  )}
+                  {isRemoving[prov.id] ? 'Eliminando...' : 'Quitar Archivo'}
+                </button>
+              )}
 
               <span className="text-xs text-slate-500">.xlsx, .xls, .csv</span>
             </div>

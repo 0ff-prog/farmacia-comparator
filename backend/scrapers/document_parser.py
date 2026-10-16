@@ -45,23 +45,31 @@ def _normalize(s: str) -> str:
 
 def _detect_columns(headers: List[str]) -> Dict[str, Optional[int]]:
     """
-    Identifica los índices de columnas relevantes con priorización:
-    - price_usd: Columna explícita en USD/Divisas/Neto USD.
-    - price_gen: Columna de precio general (PVP, Precio, Neto, etc.).
-    - tasa: Tasa de cambio de divisa si está presente.
-    - sku: Código de artículo o código de barra.
+    Identifica los índices de columnas relevantes con priorización estricta:
+    - price_usd: Columna explícita en USD/Dólares ($/USD/Dólar/Externo/Referencial/Divisa/Neto $).
+    - price_bs: Columna explícita en Bolívares/Moneda local (Bs/VES/Bolívares/Nacional).
+    - price_gen: Columna de precio general cuando no se especifica moneda.
+    - tasa: Tasa de cambio de divisa (BCV/Factor/Tasa).
+    - sku: Código de artículo o SKU interno.
+    - barcode: Código de barra (GTIN/EAN/UPC).
     - name: Descripción o nombre del producto.
     - stock: Existencia o cantidad disponible.
     - category: Departamento, categoría, línea o familia.
     - ingredient: Principio activo, molécula o componente.
     - brand: Marca, laboratorio o fabricante.
     """
-    norm = [_normalize(h) for h in headers]
+    raw_headers = [str(h).strip() if h is not None else "" for h in headers]
+    raw_lowers = [h.lower() for h in raw_headers]
+    norm = [_normalize(h) for h in raw_headers]
+
     col = {
         'price_usd': None,
+        'price_usd_alt': None,
+        'price_bs': None,
         'price_gen': None,
         'tasa': None,
         'sku': None,
+        'barcode': None,
         'name': None,
         'stock': None,
         'category': None,
@@ -69,61 +77,152 @@ def _detect_columns(headers: List[str]) -> Dict[str, Optional[int]]:
         'brand': None
     }
 
-    # 1. Precio explícito en USD
-    for i, n in enumerate(norm):
-        if any(k in n for k in ['preciousd', 'netousd', 'dvnetousd', 'usd', 'dolar', 'divisa', 'preciodolar']):
-            col['price_usd'] = i
-            break
-
-    # 2. Precio general
-    for i, n in enumerate(norm):
-        if col['price_usd'] != i and any(k in n for k in ['precio', 'neto', 'pvp', 'costo', 'valor', 'monto', 'price', 'importe']):
-            col['price_gen'] = i
-            break
-
-    # 3. Tasa de cambio (para convertir precios en Bs a USD si es necesario)
-    for i, n in enumerate(norm):
-        if 'tasa' in n or 'tasadivisa' in n or 'cambio' in n:
+    # 1. Tasa de cambio (BCV / Factor / Tasa) — descartar días de crédito / protección de tasa
+    for i, (rl, n) in enumerate(zip(raw_lowers, norm)):
+        if any(k in rl for k in ['dias', 'dia', 'proteccion', 'venc', 'credito']) or any(k in n for k in ['dias', 'proteccion', 'venc', 'credito']):
+            continue
+        if any(k in rl for k in ['tasa', 'tasadivisa', 'factor', 'cambio', 'bcv']) or any(k in n for k in ['tasa', 'cambio', 'bcv']):
             col['tasa'] = i
             break
 
+    # 2. Precio explícito en USD / Dólares
+    # Prioridad a columnas con $, USD, Dólar, Externo, Referencial, Divisa, Neto $, Precio(USD)
+    usd_candidates = []
+
+    for i, (rl, n) in enumerate(zip(raw_lowers, norm)):
+        if col['tasa'] == i:
+            continue
+
+        # Descartar columnas de totales o pedidos acumulados
+        if any(k in rl for k in ['total', 'pedido', 'solicitad', 'subtotal']) or any(k in n for k in ['total', 'pedido', 'solicitad']):
+            continue
+
+        # Detección y descalificación si es explícitamente en Bolívares
+        has_bs = bool(re.search(r'\b(bs|bs\.|bsf|ves|bolivar|bolivares|nacional|local)\b', rl)) or 'bolivar' in rl or 'preciobs' in n or 'netobs' in n
+        if has_bs:
+            col['price_bs'] = i
+            continue
+
+        has_dollar = '$' in rl
+        has_usd = any(k in rl for k in ['usd', 'dolar', 'dólar', 'dollar']) or any(k in n for k in ['usd', 'dolar'])
+        has_ext = any(k in rl for k in ['externo', 'referencial', 'divisa']) or bool(re.search(r'\b(ref|ext)\b', rl)) or any(k in n for k in ['externo', 'referencial', 'divisa'])
+        has_price_word = any(k in rl for k in ['precio', 'neto', 'pvp', 'costo', 'valor', 'monto', 'price', 'importe']) or any(k in n for k in ['precio', 'neto', 'pvp', 'costo'])
+        is_neto = any(k in rl for k in ['neto', 'neto(usd)', 'neto $']) or any(k in n for k in ['neto', 'netousd'])
+        is_dv = 'dv' in rl or 'dvneto' in n
+
+        score = 0
+        if has_dollar and has_price_word:
+            # e.g. "Precio externo ($)", "Precio referencial ($)", "Neto $", "Precio ($)", "PVP ($)"
+            score = 200
+            if is_neto and not is_dv:
+                score += 100
+            elif is_neto and is_dv:
+                score += 30
+            if has_ext or has_usd:
+                score += 50
+        elif has_dollar:
+            # e.g. "($)", "Neto $"
+            score = 160
+            if is_neto and not is_dv:
+                score += 90
+        elif has_usd and has_price_word:
+            # e.g. "NETO(USD)", "PRECIO(USD)", "Costo USD"
+            score = 180
+            if is_neto and not is_dv:
+                score += 100  # Priorizar NETO(USD) sobre PRECIO(USD)
+            elif is_neto and is_dv:
+                score += 30
+            if has_ext:
+                score += 40
+        elif has_usd:
+            score = 150
+            if is_neto and not is_dv:
+                score += 90
+        elif has_ext and has_price_word:
+            # e.g. "Precio externo", "Precio referencial", "Precio divisa", "Precio ref"
+            score = 170
+            if is_neto and not is_dv:
+                score += 80
+        elif has_ext:
+            score = 130
+
+        if score >= 120:
+            usd_candidates.append((score, i))
+
+    if usd_candidates:
+        usd_candidates.sort(key=lambda x: x[0], reverse=True)
+        col['price_usd'] = usd_candidates[0][1]
+        if len(usd_candidates) > 1:
+            col['price_usd_alt'] = usd_candidates[1][1]
+
+    # 3. Precio general (solo si no tiene divisa explícita y no es en Bolívares)
+    for i, (rl, n) in enumerate(zip(raw_lowers, norm)):
+        if i in (col['price_usd'], col['price_usd_alt'], col['tasa'], col['price_bs']):
+            continue
+        if any(k in rl for k in ['total', 'pedido', 'solicitad', 'subtotal']) or any(k in n for k in ['total', 'pedido']):
+            continue
+        has_bs = bool(re.search(r'\b(bs|bs\.|bsf|ves|bolivar|bolivares|nacional|local)\b', rl)) or 'bolivar' in rl
+        if has_bs:
+            if col['price_bs'] is None:
+                col['price_bs'] = i
+            continue
+        if any(k in rl for k in ['precio', 'neto', 'pvp', 'costo', 'valor', 'monto', 'price', 'importe']) or any(k in n for k in ['precio', 'neto', 'pvp', 'costo']):
+            col['price_gen'] = i
+            break
+
     # 4. Nombre / Descripción del producto
-    for i, n in enumerate(norm):
-        if any(k in n for k in ['descripcion', 'nombre', 'producto', 'articulo', 'detalle', 'denominacion', 'itemdesc']):
+    # Prioridad: columnas descriptivas que NO sean códigos, SKUs ni barras
+    for i, (rl, n) in enumerate(zip(raw_lowers, norm)):
+        if any(k in rl for k in ['cod', 'codigo', 'cód', 'sku', 'id', 'barra', 'ean', 'tipo']) or any(k in n for k in ['cod', 'codigo', 'sku', 'barra', 'ean']):
+            continue
+        if any(k in rl for k in ['descripcion', 'descripción', 'nombre', 'denominacion', 'producto', 'articulo', 'detalle', 'itemdesc']) or any(k in n for k in ['descripcion', 'nombre', 'denominacion', 'producto', 'articulo', 'detalle']):
             col['name'] = i
             break
 
-    # 5. SKU / Código Interno
-    for i, n in enumerate(norm):
-        if i != col['name'] and any(k in n for k in ['codigo', 'sku', 'codart', 'cod', 'item', 'ref', 'codarticulo']):
-            col['sku'] = i
-            break
+    # Fallback si no encontró nombre sin 'cod'
+    if col['name'] is None:
+        for i, n in enumerate(norm):
+            if any(k in n for k in ['descripcion', 'nombre', 'producto', 'articulo', 'detalle', 'denominacion', 'itemdesc']):
+                col['name'] = i
+                break
 
-    # 5.1 Código de Barra (EAN / UPC / GTIN / BARRA)
-    for i, n in enumerate(norm):
-        if any(k in n for k in ['barra', 'codbarra', 'cod_barra', 'ean', 'upc', 'gtin', 'barcode']):
+    # 5. Código de Barra (EAN / UPC / GTIN / BARRA)
+    for i, (rl, n) in enumerate(zip(raw_lowers, norm)):
+        if any(k in rl for k in ['barra', 'codbarra', 'cod_barra', 'ean', 'upc', 'gtin', 'barcode']) or any(k in n for k in ['barra', 'codbarra', 'ean', 'upc', 'gtin', 'barcode']):
             col['barcode'] = i
             break
 
-    # 6. Existencia / Stock
-    for i, n in enumerate(norm):
-        if any(k in n for k in ['existencia', 'stock', 'disponible', 'cantidad', 'cant', 'unidades', 'saldo', 'inventario']):
+    # 6. SKU / Código Interno (evitar columnas que ya sean precio, nombre o barra)
+    for i, (rl, n) in enumerate(zip(raw_lowers, norm)):
+        if i in (col['name'], col['price_usd'], col['price_gen'], col['price_bs'], col['barcode']):
+            continue
+        if any(k in rl for k in ['codigo', 'sku', 'codart', 'cod', 'item', 'codarticulo']) or any(k in n for k in ['codigo', 'sku', 'codart', 'cod', 'item', 'codarticulo']):
+            col['sku'] = i
+            break
+        # Si tiene 'ref', solo es SKU si NO es columna de precio
+        if (re.search(r'\bref\b', rl) or 'ref' in n) and not any(k in rl for k in ['precio', 'neto', 'costo', 'pvp', '$']):
+            col['sku'] = i
+            break
+
+    # 7. Existencia / Stock
+    for i, (rl, n) in enumerate(zip(raw_lowers, norm)):
+        if any(k in rl for k in ['existencia', 'stock', 'disponible', 'cantidad', 'cant', 'unidades', 'saldo', 'inventario']) or any(k in n for k in ['existencia', 'stock', 'disponible', 'cantidad', 'cant']):
             col['stock'] = i
             break
 
-    # 7. Categoría / Departamento
+    # 8. Categoría / Departamento
     for i, n in enumerate(norm):
         if any(k in n for k in ['departamento', 'categoria', 'category', 'linea', 'grupo', 'clase', 'familia', 'division']):
             col['category'] = i
             break
 
-    # 8. Principio Activo
+    # 9. Principio Activo
     for i, n in enumerate(norm):
         if any(k in n for k in ['principio', 'activo', 'molecula', 'componente', 'formula', 'droga', 'generico', 'principioactivo']):
             col['ingredient'] = i
             break
 
-    # 9. Marca / Laboratorio
+    # 10. Marca / Laboratorio
     for i, n in enumerate(norm):
         if any(k in n for k in ['marca', 'laboratorio', 'proveedor', 'fabricante', 'lab']):
             col['brand'] = i
@@ -202,10 +301,12 @@ def _find_header_row(rows: List[List[Any]]) -> Tuple[int, List[str]]:
             continue
         row_str = " ".join(_normalize(str(c)) for c in row if c is not None)
         
+        raw_row_str = " ".join(str(c).lower() for c in row if c is not None)
+
         score = 0
         if any(k in row_str for k in ['descripcion', 'nombre', 'producto', 'articulo']):
             score += 4
-        if any(k in row_str for k in ['precio', 'neto', 'pvp', 'costo', 'usd']):
+        if any(k in row_str for k in ['precio', 'neto', 'pvp', 'costo', 'usd', 'externo', 'referencial', 'divisa']) or '$' in raw_row_str:
             score += 4
         if any(k in row_str for k in ['codigo', 'sku', 'codart', 'barra']):
             score += 3
@@ -228,6 +329,19 @@ def _find_header_row(rows: List[List[Any]]) -> Tuple[int, List[str]]:
 
 def _rows_to_dicts(headers: List[str], data_rows: List[List[Any]]) -> List[Dict[str, Any]]:
     col = _detect_columns(headers)
+
+    # Si no se detectó price_usd por encabezados, verificar si alguna columna tiene valores con $ o usd
+    if col['price_usd'] is None and data_rows:
+        for r in data_rows[:15]:
+            for idx, cell in enumerate(r):
+                if cell is not None and idx not in (col['name'], col['sku'], col['barcode']):
+                    c_str = str(cell).strip().lower()
+                    if '$' in c_str or 'usd' in c_str:
+                        col['price_usd'] = idx
+                        break
+            if col['price_usd'] is not None:
+                break
+
     results = []
 
     for i, row in enumerate(data_rows):
@@ -248,18 +362,25 @@ def _rows_to_dicts(headers: List[str], data_rows: List[List[Any]]) -> List[Dict[
         if not raw_name:
             raw_name = raw_sku
 
-        # Cálculo de precio (priorizar USD, o convertir Bs con Tasa)
+        # Cálculo de precio (prioridad a USD / Dólares, aceptando Neto(USD) o Precio(USD) según el diseño del archivo)
         p_usd = _clean_price(get(col['price_usd'])) if col['price_usd'] is not None else 0.0
+        if p_usd <= 0 and col.get('price_usd_alt') is not None:
+            p_usd = _clean_price(get(col['price_usd_alt']))
         p_gen = _clean_price(get(col['price_gen'])) if col['price_gen'] is not None else 0.0
+        p_bs = _clean_price(get(col['price_bs'])) if col.get('price_bs') is not None else 0.0
         tasa = _clean_price(get(col['tasa'])) if col['tasa'] is not None else 0.0
 
         if p_usd > 0:
             price = p_usd
-        elif tasa > 0 and p_gen > 0 and p_gen > 100:
+        elif tasa > 0 and p_bs > 0:
+            price = round(p_bs / tasa, 2)
+        elif tasa > 0 and p_gen > 100:
             # Si el precio general es alto y hay tasa, está en Bolívares -> convertir a USD
             price = round(p_gen / tasa, 2)
-        else:
+        elif p_gen > 0 and col.get('price_bs') != col['price_gen']:
             price = p_gen
+        else:
+            price = 0.0
 
         if price <= 0:
             continue  # No cotizado o precio inválido
